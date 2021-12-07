@@ -12,6 +12,4 @@ RUN yum -y install curl
 #RUN yum -y install iftop
 #RUN yum -y install iotop
 RUN yum -y install cscope
-
-#Source the appropriate bashrc and bashprofile on startup
-CMD source /mnt/d/SmoothstackTraining/Week01/Day01/Assign01/.bashrc
+#still stuck on getting bashrc imported
