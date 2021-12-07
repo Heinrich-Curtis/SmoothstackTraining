@@ -5,7 +5,7 @@
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
-
+alias la='ls -a'
 # Source global definitions
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc

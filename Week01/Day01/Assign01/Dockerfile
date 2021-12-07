@@ -12,4 +12,5 @@ RUN yum -y install curl
 #RUN yum -y install iftop
 #RUN yum -y install iotop
 RUN yum -y install cscope
-#still stuck on getting bashrc imported
+#I just made a minor change to the supplied bashrc (I added an alias for ls -a) to show this works
+ADD .bashrc /root/.bashrc
