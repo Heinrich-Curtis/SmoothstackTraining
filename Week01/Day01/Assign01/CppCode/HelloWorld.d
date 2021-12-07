@@ -1,1 +1,0 @@
-./HelloWorld.o: HelloWorld.cpp
