@@ -9,6 +9,7 @@ RUN yum -y install clang
 RUN yum -y install tree
 RUN yum -y install zip
 RUN yum -y install curl
+#RUN dnf -y install htop
 #RUN yum -y install iftop
 #RUN yum -y install iotop
 RUN yum -y install cscope
