@@ -13,7 +13,5 @@ RUN yum -y install curl
 #RUN yum -y install iotop
 RUN yum -y install cscope
 
-#we also need to set the environment to the home directory of the host OS (by which I mean,
-#the root of this git repo). look at ENV command?
-#maybe this is only doable at docker run time, so we need a shell script that sets the fields
-#ENV HOME=/mnt/d/CodingStuff/SmoothstackTraining/
+#Source the appropriate bashrc and bashprofile on startup
+CMD source /mnt/d/SmoothstackTraining/Week01/Day01/Assign01/.bashrc
