@@ -1,2 +1,12 @@
-#bashrc file where I store aliases and things. Adding some small things here now only so I can verify this is being loaded on container spinup
-alias la="ls -a"
+# .bashrc
+
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
