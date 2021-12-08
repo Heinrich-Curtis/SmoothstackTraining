@@ -5,8 +5,10 @@
 #include <iomanip>
 
 using namespace std;
+#define FLOAT_PRECISION 15
 
-uint32_t increment_exponent(uint32_t value);
+uint32_t set_exponent(uint32_t value, uint8_t newExp);
+uint32_t set_mantissa(uint32_t value, uint32_t newMant);
 
 int main(){
 	//manually set some bits in a number, this value should be the IEEE 754 
@@ -14,45 +16,113 @@ int main(){
 	uint32_t num = 0x3f800000;
 	//make a pointer so we can reinterperet these bits with pointer casts
 	uint32_t* p_num = &num;
-	cout << "float 1: " << setprecision(12) << *((float*)p_num) << endl;
-	num++;
-	cout << "float 1: " << *((float*)p_num) << endl;
-	num++;
-	cout << "float 1: " << *((float*)p_num) << endl;
-	num = 0x40000000;
-	cout << hex << num << endl;
-	cout << "float 1: " << *((float*)p_num) << endl;
-	num++;
-	cout << "float 1: " << *((float*)p_num) << endl;
-	num++;
-	cout << "float 1: " << *((float*)p_num) << endl;
+	
+	/* print out some sequential floating point values so we can look
+	 * at the difference between them. Any values between these are
+	 * unrepresentable in ieee 754 and need to be corrected to one of
+	 * them. This difference is a measure of precision. 
+	*/
+	cout << "Let's look at successive mantissa values for a given " <<
+		"exponent." << endl;
+	cout << "Exponent 0, mantissa 0: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+	num = set_mantissa(num, 1);
+	float mant_one =  *((float*)p_num); 
+	cout << "Exponent 0, mantissa 1: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+	num = set_mantissa(num, 2);
+	float mant_two =  *((float*)p_num); 
+	cout << "Exponent 0, mantissa 2: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+	num = set_mantissa(num, 3);
+	float mant_three =  *((float*)p_num); 
+	cout << "Exponent 0, mantissa 3: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+	
+	/*
+	 * Check to see if the difference between successive values is the same
+	 */
 
-	uint32_t j = 128;
-	uint32_t val = j << 23;
-	cout << "j << 23 = " << val << endl;
-	val =increment_exponent(val);
-	cout << "j++ << 23 = " << hex << val << endl;
+	float first_exp_difference = mant_two - mant_one;	
+	if ((mant_three - mant_two) == (mant_two - mant_one)){
+		cout << "\nThe difference between successive mantissa values"<<
+			" for an exponent is constant.\n" << endl;
+	}
+	else {
+		cout << "\nThe difference between successive mantissa value "<<
+			"is not the same for some reason.\n" << endl;
+	}
+	cout << "Now let's adjust the exponent part of the number.\n" << endl;
+	
+	//num is now the iee 754 representation for 2, which means the exponent
+	//in the representation increased by 1. I have reset the mantissa bits
+	//to 0.
+	num = 0x40000000;
+	cout << "Exponent 1, mantissa 0: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+
+	num = set_mantissa(num, 1);
+	mant_one = *((float*)p_num);
+	cout << "Exponent 1, mantissa 1: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+	num = set_mantissa(num, 2);
+	mant_two = *((float*)p_num);
+	cout << "Exponent 1, mantissa 2: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+	num = set_mantissa(num, 3);
+	mant_three = *((float*)p_num);
+	cout << "Exponent 1, mantissa 3: " << setprecision(FLOAT_PRECISION) <<
+	       	*((float*)p_num) << endl;
+
+
+	//compare the differences for different exponents and draw a conclusion
+	//from what we find	
+	float second_exp_difference = mant_two - mant_one;	
+	if ((mant_three - mant_two) == (mant_two - mant_one)){
+		cout << "\nThe difference between successive mantissa values " <<
+			"is still constant for a higher exponent." << endl;
+	}
+	else {
+		cout << "\nThe difference between successive mantissa value " <<
+			"for a bigger exponent changes." << endl;
+	}
+	if (second_exp_difference > first_exp_difference){
+		cout << " \nBut the difference between successive values"<<
+			" increases as the exponent increases, which means "<<
+			"precision of floats goes down as the exponent " <<
+			"part of the representation of the number goes up."<<
+			endl;
+	}
+	else {
+		cout << "\nThe difference between successive mantissa value" <<
+			" does not increase as the exponent increases. This"<<
+			" is not actually possible. Check your work."<< endl;
+	}
 	return 0;
 }
 
 /*
- *	increment the exponent in the ieee 754 encoded number. Doesn't handle
- *	any special cases (overflow, etc.) 
+ *	set the exponent in the ieee 754 encoded number by 
+ *	deleting the old one. Doesn't handle any special cases
+ *	(overflow, etc.) 
  */
 
-uint32_t increment_exponent(uint32_t value){
-	uint32_t temp = value >> 23;
-	temp++;
-	value = temp << 23;
+uint32_t set_exponent(uint32_t value, uint8_t newExp){
+	value = value & 0x807FFFFF;
+	uint32_t temp = newExp;
+	value = value | (temp << 23);
  	return value;	
 }
 
 /*
- *	increment the mantissa in the ieee 754 encoded number. Doesn't handle
- *	any special cases (overflow, etc) 
+ *	set the mantissa in the ieee 754 encoded number by deleting the old 
+ *	mantissa bits and setting them from newMant. Doesn't handle
+ *	any special cases (overflow, newMant > 23 bits, etc.) 
  */
 
-uint32_t increment_mantissa(uint32_t value){
-	
+uint32_t set_mantissa(uint32_t value, uint32_t newMant){
+	value = value & 0xFF800000;
+	return (value | newMant);
+		
 }
 

@@ -30,4 +30,14 @@ directives replaced) is -E and the option to run the preprocessor and compiler i
 file for your code.
 
 Question 5:
-To show this, I show that the distance between successive floats gets larger as the float gets larger. So I manually set the bits of a 32-bit number and cast it to a float, then I increment the number and cast that value, and I subtract the larger from the smaller value to show the difference, which is how far any number between those two values could be imprecise by. If the amount of error is larger for the large numbers than for the smaller numbers, I've demonstrated the property.
+To show this, I show that the distance between successive floats gets larger as the float gets larger. So I manually
+set the bits of a 32-bit number and cast it to a float, then I increment the number and cast that value, and I subtract
+the larger from the smaller value to show the difference, which is how far any number between those two values could be
+imprecise by. If the amount of error is larger for the large numbers than for the smaller numbers, I've demonstrated
+the property.
+
+The specific reason it happens is because of the exponent: there are only a fixed number of possible mantissa values
+for any one exponent value, but as the exponent value goes up, the range of real numbers expected to be covered by
+that exponent increases. This means that as the exponent increases, the proportion of values representable by the
+float number within that range is going down; very large numbers are going to have to be adjusted farther to their
+nearest representable value than very small numbers.
