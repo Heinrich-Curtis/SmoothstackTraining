@@ -1,0 +1,33 @@
+This file contains written answers to the questions from todays' assignment where such an answer was requested.
+
+Question 2: 
+Limitations of Solution 
+Because the program responds to types without fixed sizes ('int', as opposed to 
+'int16_t'), the answer you get from this program is limited to the capabilities of the system that you run the 
+program on:some systems will respond to the input 'int' with 2 because that system supports 2-byte ints, and others
+will respond with 4 because they support 4-byte ints. This issue doesn't happen in (for example) Java, because in 
+java the ranges (and thus the sizes) of the primitive types are specified by the language. For instance, in Java 
+se17, an int is ALWAYS 32 bits and a char is ALWAYS 16 bits 
+(https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2 , section 4.2, "Primitive Types and Values"). 
+
+The program does handle whitespace around the input string, but is case sensitive (typing 
+"      char    " works fine, but typing "cHar" does not, because I use is the built-in string "==" operator to
+check for string equality). For the same reason, you can also type anything you want after the first string and 
+get a valid response as long as the first string is valid (typing "char ls" will get you the response 1).
+
+Question 3:
+Including debug information
+The switch to include debugging information for GDB is "-g" (one of the two modifications to the supplied Makefile I made for Assignment01 was to add this switch). Reading through the supplied link, I found that the family of -g switches
+ONLY includes debug information that is guaranteed to work with GDB, and may "make other debbugers crash or refuse
+to read the program". I have no experience with any other C++ debuggers, so I didn't realize this was possible.
+
+Question 4:
+Clang++ compiler switches
+I'm going to assume this question is meant to say "What c++ compiler option do you need to use to only generate object
+code, and not generate the final executable?" (the word "suppress" doesn't seem to belong here). That option is 
+"-c". The option to only run the preprocessor (which outputs the contents of the source file with all the preprocessor 
+directives replaced) is -E and the option to run the preprocessor and compiler is -S, which outputs the assembly code 
+file for your code.
+
+Question 5:
+To show this, I show that the distance between successive floats gets larger as the float gets larger. So I manually set the bits of a 32-bit number and cast it to a float, then I increment the number and cast that value, and I subtract the larger from the smaller value to show the difference, which is how far any number between those two values could be imprecise by. If the amount of error is larger for the large numbers than for the smaller numbers, I've demonstrated the property.
