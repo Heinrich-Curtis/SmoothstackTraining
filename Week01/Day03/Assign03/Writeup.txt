@@ -1,4 +1,13 @@
-Question 2: Work in Progress, doesn't compile (as of 2pm)
+Question 2: Status: complete (as of 3pm):
+
+UPDATE: I was way overthinking it. The easiest course of action was to use
+automatic promotion and c-style casting to put all the ints and floats into
+an array of doubles, then either use an established convention to identify
+the types (see detail in the discussion below), or to use a separate data
+structure to record and retrieve the types. I am interested in the problem
+of getting the bits from a float value so I can perform bitwise operations
+on it, so I'm going to mess with that for a little on my own to see if I 
+can get it to work.
 
 The obvious approach is to use polymorphism, but the assignment says no
 classes or structs. The next idea is just to make a union of an int and
