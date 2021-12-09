@@ -1,0 +1,29 @@
+Question 2: Work in Progress
+
+Question 3:
+The main differences between arrays and vectors are that: A) arrays are 
+much faster (more performant), arrays have a fixed size and vectors 
+can grow dynamically, and c) as an stl container, vectors already perform
+lots of housekeeping tasks like making sure the items in them are sequential
+. In situations where you know the maximum number of things that you need to
+store and maintaining a certain ordering of the items isn't as important,
+you can use a primitive array. If you need to enforce a consistent ordering
+on the items in the container while performing lots of random insert/removes
+and/ or you don't know how much space you'll need, use the vector instead.
+
+Question 4:
+Push_back() on a vector is efficient because the vector maintains a reference
+to the back of the list of items in it, so placing an item there is a constant
+-time operation. In addition, when you place an item at the back of the vector,
+no other elements need to be moved in order to maintain appropriate structure.
+When you insert an element, you can be inserting it to any location, and 
+inserting it any place besides the back requires that you A) find the 
+appropriate location (maybe you want it just after some particular element 
+which you need to find, or maybe it's just at some numeric position in the
+list), and then every object at that position or later in the list needs to 
+be moved back a space in order to make room for it. push_back is a constant
+-time operation, so it's O(1) in the best, worst, and average case. Insert
+has a best case of O(1) (when you're inserting at the back of the vector),
+a worst case of O(N) (when you insert at the very front and must move every
+element in the vector), and an average case of O(N/2), which is just
+asymptotically O(N).
