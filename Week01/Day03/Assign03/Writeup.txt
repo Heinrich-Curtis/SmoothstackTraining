@@ -1,4 +1,22 @@
-Question 2: Work in Progress
+Question 2: Work in Progress, doesn't compile (as of 2pm)
+
+The obvious approach is to use polymorphism, but the assignment says no
+classes or structs. The next idea is just to make a union of an int and
+a float, but a union is technically a class type so I can't use it. The 
+next idea is to make an array of pointers and then get the bits from the
+int and float and make that data pointers which I then put into the array.
+Then I can either use a tag bit (since the pointers on my system are 8 bytes
+and the int and float types are only 4 bytes) to say which ones are floats 
+so I can convert the pointer types back to the appropriate types. I'm currently
+trying to figure this approach out now, but I'm stuck trying to convert a
+float to any integral type or perform bitwise operations on it so i can get
+the data into the pointer type. Another approach (if I could solve the float
+to integral issue) would just be to declare a convention that says something 
+like "all odd-numbered positions in the array are ints, all evens are floats"
+and then just place the elements in the right position. It sounds dumb, but
+conventions like this are exactly how network protocols identify valid messages
+, since there's no concept of class at the hardware level, just bits moving on
+a wire.
 
 Question 3:
 The main differences between arrays and vectors are that: A) arrays are 
