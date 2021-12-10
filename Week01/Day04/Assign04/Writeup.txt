@@ -1,8 +1,10 @@
 Assign04: Assignment and Operators
 
-The way I decided to do both questions with code (1 and 4) was to actually
+The way I decided to do questions with code (1,2  and 4) was to actually
 put the code in a cpp file and compile and run it. You can run it yourself
-to verify my answers.
+to verify my answers. Note that I altered the makefile a little by taking
+out the "-Werror" compiler switch so the warning in question 1 doesn't throw
+an error.
 -------------------------------------------------------------------------------
 Question 1: Arithmetic expressions 
 "assert 3 == 3.0" runs fine because the 3 gets promoted to a float and the
