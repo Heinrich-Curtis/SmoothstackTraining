@@ -1,0 +1,114 @@
+Assign04: Assignment and Operators
+
+The way I decided to do both questions with code (1 and 4) was to actually
+put the code in a cpp file and compile and run it. You can run it yourself
+to verify my answers.
+-------------------------------------------------------------------------------
+Question 1: Arithmetic expressions 
+"assert 3 == 3.0" runs fine because the 3 gets promoted to a float and the
+value 3 can be represented exactly in a float, so the comparison works.
+
+"assert x == 3.1" fails because the value 3.1 can't be stored exactly due
+to floating-point precision, so x is not exactly equal to 3.1 and the 
+comparison fails.
+
+"assert 3.1 == 3.1" works. I assume this is because both immediates have a
+value that comes from a common location in the executable memory, so they
+of course have the same value.
+
+"assert true = 1.0" works because true is just an alias for 1, which gets
+promoted to 1.0, and the comparison is true.
+
+"assert('a' == 97) works because the ascii value for the character 'a' is 
+97: the a gets promoted to the int 97 for the comparison.
+
+"assert(NULL == p)" works because 0 is an alias for the nullptr constant. This
+is the same reason "assert(NULL == 0)" works.
+-------------------------------------------------------------------------------
+Question 2: Truth table for casting
+
+The general rule is that smaller (in byte size) types get promoted to larger
+types in order to avoid possible loss in precision. Somewhat interestingly,
+bools and chars are promoted all the way to ints instead of just the wider
+of the two types; see my "questionTwo" function in my cpp code for more info.
+
+Arithmetic Operation Casting "Truth Table"
+		int	float	char	bool
+--------------------------------------------
+int	|	int	float	int	int
+	
+float	|	float	float	float	float
+
+char	|	int	float	int	int
+
+bool	|	int	float	int	int
+
+
+Question 3: Operators
+
+I'm going to list as many operators as I can remember off the top of my head.
+I'm not going to list when operators have different behavior for different
+types (like float division versus integer division).
+
+Binary Operators:
+
+"+" - arithmetic addition, 		3 + 5 = 8
+"-" - arithmetic subtraction, 		3 - 5 = -2
+"*" - arithmetic multiplication		3 * 5 = 15
+"/" - arithmtic division		6 / 2 = 3
+"+=", "-=", "*=", "/="	compound assignemnt statements, ex. x += 5; 
+	// the value of x is increased by 5
+"%" - modulo				6 % 5 = 1
+"=" - assignment operator		int x = 3 + 5	//x = 8
+"<" - less than 			3 < 5		//true
+">"  - greater than			3 > 5		//false
+"==" - equal to				3 == 5		//false	
+"<=" - less than or equal		5 <= 5		//true
+">=" - greater than or equal		5 >= 5		//true
+"." - member operator			x.y	//get the member y of object x
+"->" - pointer member operator		x->y	
+	//get the member y of pointer-to-object x
+"&" - bitwise AND			1 & 1 // 1
+"|" - bitwise OR			1 | 0 // 1
+"^" - bitwise XOR			1 ^ 0 // 1
+"<<" - left shift			1 << 1 // 2
+">>" - arithmetic(?) right shift 	2 >> 1 // 1
+"[]" - array subscript operator		a[b] //get element b of array a
+
+
+Unary operators:
+
+"++" - incremement operator		x++ // return value of x, then increment
+		//can also be prefix: ++x " increment x then return that value"
+"--" - decrement operator		x-- // return value of x, then decrement
+		//can also be prefix
+"*" - dereference operator 		*ptr //return the value stored at the 
+					location ptr
+"!" - boolean NOT			!true == false //true
+"~" - bitwise NOT			~0xF1 == 0x0E //true
+"sizeof(arg)"				returns the size of arg in bytes
+"typeid(arg)"				returns the type of the arg in a type 
+	called "type-info"; a human-readable version can be viewed in 
+	"typeof(arg).name()"
+
+Ternary operators:
+
+"?:" conditional operator	(a == b) ? c : d 
+		//if a equals b, return c. Otherwise, return d.
+
+Question 4: Increment Operators
+
+Yes, the program works fine with no errors. This is because the increement 
+operator has precedence over the addition operator, which has precedence
+over the assignment operator. If the increment operator DIDN'T have precedence
+over addition, you would be attempting to add 2 to "x++", which isn't a number.
+
+Question 5: More truth tables
+
+X	Y	X AND Y		X OR Y		NOT (X AND Y)	NOT (X OR Y)	
+----------------------------------------------------------------------------
+T	T	T		T		F		F
+T	F	F		T		T		F
+F	T	F		T		T		F
+F	F	F		F		T		T
+
