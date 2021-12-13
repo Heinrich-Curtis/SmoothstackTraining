@@ -1,11 +1,11 @@
 ####################### Makefile Template ##########################
 # Compiler settings - Can be customized.
 CC = clang++
-CXXFLAGS = -std=c++17 -Wall -g
+CXXFLAGS = -std=c++17 -Wall -g -O0
 LDFLAGS =
 
 # Makefile settings - Can be customized.
-APPNAME = virtual_ref
+APPNAME = bankcli
 EXT = .cpp
 SRCDIR = .
 OBJDIR = .
