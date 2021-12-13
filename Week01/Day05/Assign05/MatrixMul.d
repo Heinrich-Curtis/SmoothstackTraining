@@ -1,1 +1,0 @@
-./MatrixMul.o: MatrixMul.cpp
