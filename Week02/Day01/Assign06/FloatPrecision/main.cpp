@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <iomanip>
 #define DEBUG_FLAG
 
 using namespace std;
@@ -51,10 +52,10 @@ int main(){
 	
 	//print the output
 	cout << "J = " << j << ", N = " << n << endl;
-	cout << j/pow(2,n) << endl;
+	cout << setprecision(15) << j/pow(2,n) << endl;
 	//run some tests
 	assert (find_best_n(0.125) == 55);
 	//cout << "J max: " << J_max << endl;
-	//assert (find_best_j(0.125, 55) == 4503599627370496);	
+	assert (find_best_j(0.125, 55) == 4503599627370496);	
 	return 0;
 }
