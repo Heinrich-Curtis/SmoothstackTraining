@@ -19,7 +19,11 @@
 using namespace std;
 //#define DEBUG
 
-
+//static test function declarations
+static bool runTransactionTests();
+static bool parseCurrencyTests();
+static bool getTransDataTests();
+static bool runCustomerTests();
 
 int main(){
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -135,8 +139,11 @@ void quit( week2Eval::AccountList& accountList,
 		account->set_ssn(cus->getSsn());
 		account->set_date_opened(cus->getDateOpened());
 		account->set_balance(cus->getBalance());
+		//customerList->remove(cus);
+		//delete cus;
 		//have to serialize transactions here too
 	}
+	delete customerList;
 	/*
 	 *now we've written all the changes, so save it to the file and quit
 	 *We want truncate flag here because the database should reflect
@@ -156,6 +163,7 @@ void quit( week2Eval::AccountList& accountList,
 	}
 	outFile.close();
 	}
+	
 	google::protobuf::ShutdownProtobufLibrary();
 		
 	cout << "logged out" << endl;
@@ -214,8 +222,10 @@ void displayAccount(std::list<Customer*>* customerList){
 	if (input =="add transaction" || input == "1"){
 		//add the transaction
 		Transaction tr = getTransactionData();
+		/*
 		cout << "Transaction has type" << tr.printType() <<
 			" and amount " << tr.getAmount() << endl;
+			*/
 		//now we have the data so we add it to the account
 		if (!outerCus->isTransactionPossible(tr)){
 			cout << "Insufficient balance." << endl;
@@ -227,6 +237,11 @@ void displayAccount(std::list<Customer*>* customerList){
 		}
 
 	}
+	//2 or something else
+	else{
+		return;
+	}
+	cin.ignore();
 
 }
 
@@ -437,10 +452,10 @@ bool checkSsn(std::string& ssn){
 
 //populate the customer list from what we retrieve from the accounts list file
 int populateCustomerList(std::list<Customer*>* customers, week2Eval::AccountList& accounts){
-	
+		
 	for (int i = 0; i < accounts.accounts_size();i++){
-		const week2Eval::Account& account = accounts.accounts(i);
 		Customer* cus = new Customer();
+		const week2Eval::Account& account = accounts.accounts(i);
 		cus->setFirstName(account.first_name());
 		cus->setLastName(account.last_name());
 		cus->setSsn(account.ssn());
@@ -449,7 +464,6 @@ int populateCustomerList(std::list<Customer*>* customers, week2Eval::AccountList
 		cus->setBalance(account.balance());
 		customers->push_back(cus);
 	}
-	
 	return accounts.next_available_account();
 }
 //get the required info to build a transaction. Returns the amount -1 if 
@@ -515,14 +529,15 @@ void printCustomerInfo(Customer* cus){
 		endl;
 	
 }
+
+//runs a bunch of tests
 bool run_tests(){
 	//test customer
 	Customer cus("John","James","111111111","10");
 	assert(cus.getAccountNumber() == "10");
 	assert(cus.getFirstName() == "John");
 	assert(cus.getLastName() != "John");
-	//this test fails every new day because the date changes
-	assert(cus.getDateOpened() == "Dec 19 2021");
+	
 	//show functionality of overloaded equals/not equals
 	Customer cus2("Talib","James","111111112","12");
 	assert(cus != cus2);
@@ -532,24 +547,28 @@ bool run_tests(){
 	//test prompts and helpers
 	std::list<Customer> customerList;
 	assert(customerList.empty());
-	//customerList.push_back(cus);
-	//assert(customerList.size() == 1);
-	//customerList.push_back(cus2);
-        //assert(customerList.size() == 2);
+	customerList.push_back(cus);
+	assert(customerList.size() == 1);
+	customerList.push_back(cus2);
+        assert(customerList.size() == 2);
 	std::string badSsn = "11111111";
+	
 	//fails because ssn too short
 	assert(!checkSsn(badSsn));
 	badSsn = "11111111a";
+	
 	//fails because letter
 	assert(!checkSsn(badSsn));
 	badSsn = "1111111111";
+	
 	//fails because too long
 	assert(!checkSsn(badSsn));
 	badSsn = "111111111";
-	//passes
-	assert(checkSsn(badSsn));
 	
+	//passes
+	assert(checkSsn(badSsn));	
 	std::string badName = "Ja4mes";
+
 	//fails because number
 	assert(!onlyLetters(badName));
 	
@@ -560,26 +579,101 @@ bool run_tests(){
 	badName = "James";
 	//passes
 	assert(onlyLetters(badName));
-
+	cout << "Prompt tests passed" << endl;
 	//this takes customer list as an argument because of how closeAccount is written
-	//closeAccount(customerList);
+	//to automate these tests, redirect input from "testingInput.txt"
+	cout << "Close an account in an empty list here" << endl;
+	std::list<Customer*>* cusList = new std::list<Customer*>();
+	closeAccount(cusList);
 	//use account 12 here
-	//assert(customerList.size() == 1);
+	assert(cusList->size() == 0);
 	
 	//add account 12 here with 111111114
-	//int nextAccount = 4;
-	//createAccount(customerList, nextAccount);
-	//assert(customerList.size() == 2);
-	
+	cout << "Add account 12 with ssn 111111114" << endl;
+	int nextAccount = 1;
+	createAccount(cusList, nextAccount);
+	assert(cusList->size() == 1);
+	delete cusList;
+	cout << "Prompt tests passed" << endl;
+	//call other testing functions	
+	runCustomerTests();
+	runTransactionTests();
+	parseCurrencyTests();
+	getTransDataTests();
+	//etc
+
+	return true;	
+}
+
+//additional unit tests for Customer class, most have already been tested
+//in the prompt tests
+static bool runCustomerTests(){
+	Customer cus1;
+	assert(cus1.getBalance() == 0);
+	assert(cus1.getDateOpened() == "");
+	std::string newDate = "Dec 5 1950";
+	cus1.setDateOpened(newDate);
+	assert(cus1.getDateOpened() != cus1.setDateOpened()); 
+	cout << "Customer unit tests passed" << endl;
+	return true;
+}
+//unit tests for transaction class
+static bool runTransactionTests(){
 	//transaction tests
 	Transaction tr(Transaction::TrType::DEBIT, 100);
 	tr.setType(Transaction::TrType::DEBIT);
 	tr.setAmount(100);
-	assert(tr.getEffectiveDate() == "Dec 19 2021");
-	
+	assert(tr.getEffectiveDate() == "Dec 20 2021");
+	assert(tr.getType() != Transaction::TrType::CREDIT);
+	assert(tr.getAmount() == 100);
+	tr.setType(Transaction::TrType::CREDIT);
+	assert(tr.getType() == Transaction::TrType::CREDIT);	
+	cout << "Transaction unit tests passed" << endl;
 	//more tests here for customers with transactions, adding transactions
-	//etc
-
-	return true;	
-	
+	Customer cus("James","Joyce","111111111","1");
+	//not enough money
+	tr.setType(Transaction::TrType::DEBIT);
+	assert(!cus.isTransactionPossible(tr));
+	tr.setType(Transaction::TrType::CREDIT);
+	assert(cus.isTransactionPossible(tr));
+	cus.adjustBalance(tr);
+	assert(cus.getBalance() == 100);
+	assert(cus.getTransactions()->empty());
+	cus.registerTransaction(tr);
+	assert(!cus.getTransactions()->empty());
+	assert(cus.getTransactions()->front().getAmount() == tr.getAmount());
+	cout << "Customer and Transaction integration tests passed" << endl;
+	return true;
 }
+//tests for parseInputToCurreny function
+static bool parseCurrencyTests(){
+	std::string input ="-1.10 ";
+	assert (parseInputToCurrency(input) == -1);
+	input = "119.37";
+	assert(parseInputToCurrency(input) == 11937);
+	return true;
+}
+
+//tests for getTransactionData function, input data is passed from
+//testingInput.txt
+static bool getTransDataTests(){
+	//credit with a negative amount
+	Transaction tr = getTransactionData();
+	assert(tr.getAmount() == -1);
+	//type is debit because that's what shows up for invalid value
+	assert(tr.getType() == Transaction::TrType::DEBIT);
+	//credit with a positive amount
+	tr = getTransactionData();
+	assert(tr.getAmount() == 1137);
+	assert(tr.getType() == Transaction::TrType::CREDIT);
+	//debit with a negative amount
+	tr = getTransactionData();
+	assert(tr.getAmount() == -1);
+	assert(tr.getType() == Transaction::TrType::DEBIT);
+	//debit with a positive amount
+	tr = getTransactionData();
+	assert(tr.getAmount() == 1423);
+	assert(tr.getType() == Transaction::TrType::DEBIT);
+	return true;
+}
+

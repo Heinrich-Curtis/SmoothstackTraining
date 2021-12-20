@@ -47,7 +47,7 @@ class Customer{
 	//and when destructors get called
 	~Customer(){
 		//std::cout << "inside of Customer's destructor" <<std::endl;
-		delete m_transactionHistory;
+		//delete m_transactionHistory;
 	}
 	
 	//getters and setters

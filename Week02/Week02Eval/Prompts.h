@@ -5,6 +5,7 @@
 #include <list>
 
 void showLoginPrompt();
+std::string getPassword();
 void showHomePrompt();
 void quit(week2Eval::AccountList& accountList, std::list<Customer*>* customerList, const std::string& IOFileName, int nextAccountNumber);
 void showAccountPrompt();

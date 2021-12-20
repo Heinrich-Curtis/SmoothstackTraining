@@ -1,0 +1,12 @@
+1
+James
+Joyce
+111111114
+credit
+-5
+credit
+11.37
+debit
+-3.75
+debit
+14.23
