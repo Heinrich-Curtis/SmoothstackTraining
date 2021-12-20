@@ -37,7 +37,12 @@ class Transaction{
 		int getAmount(){
 			return m_amount;
 		}
-		
+		std::string printType(){
+			if (m_type == TrType::DEBIT){
+				return "debit";
+			}
+			else return "credit";
+		}
 		//dates the transaction. Mostly for viewing now, but this
 		//probably be turned into some numeric type later some we
 		//can do things like search for all transactions in a date

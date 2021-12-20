@@ -47,7 +47,7 @@ struct TableStruct_accounts_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[2]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[3]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -58,12 +58,16 @@ namespace week2Eval {
 class Account;
 struct AccountDefaultTypeInternal;
 extern AccountDefaultTypeInternal _Account_default_instance_;
+class AccountList;
+struct AccountListDefaultTypeInternal;
+extern AccountListDefaultTypeInternal _AccountList_default_instance_;
 class Account_Transaction;
 struct Account_TransactionDefaultTypeInternal;
 extern Account_TransactionDefaultTypeInternal _Account_Transaction_default_instance_;
 }  // namespace week2Eval
 PROTOBUF_NAMESPACE_OPEN
 template<> ::week2Eval::Account* Arena::CreateMaybeMessage<::week2Eval::Account>(Arena*);
+template<> ::week2Eval::AccountList* Arena::CreateMaybeMessage<::week2Eval::AccountList>(Arena*);
 template<> ::week2Eval::Account_Transaction* Arena::CreateMaybeMessage<::week2Eval::Account_Transaction>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace week2Eval {
@@ -433,10 +437,10 @@ class Account final :
     kTransactionsFieldNumber = 7,
     kFirstNameFieldNumber = 1,
     kLastNameFieldNumber = 2,
-    kAccountIdFieldNumber = 3,
+    kAccountNumberFieldNumber = 3,
     kSsnFieldNumber = 4,
     kDateOpenedFieldNumber = 5,
-    kAccountNumberFieldNumber = 6,
+    kBalanceFieldNumber = 6,
   };
   // repeated .week2Eval.Account.Transaction transactions = 7;
   int transactions_size() const;
@@ -492,22 +496,22 @@ class Account final :
   std::string* _internal_mutable_last_name();
   public:
 
-  // required string account_id = 3;
-  bool has_account_id() const;
+  // required string account_number = 3;
+  bool has_account_number() const;
   private:
-  bool _internal_has_account_id() const;
+  bool _internal_has_account_number() const;
   public:
-  void clear_account_id();
-  const std::string& account_id() const;
+  void clear_account_number();
+  const std::string& account_number() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_account_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_account_id();
-  PROTOBUF_NODISCARD std::string* release_account_id();
-  void set_allocated_account_id(std::string* account_id);
+  void set_account_number(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_account_number();
+  PROTOBUF_NODISCARD std::string* release_account_number();
+  void set_allocated_account_number(std::string* account_number);
   private:
-  const std::string& _internal_account_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_account_id(const std::string& value);
-  std::string* _internal_mutable_account_id();
+  const std::string& _internal_account_number() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_account_number(const std::string& value);
+  std::string* _internal_mutable_account_number();
   public:
 
   // required string ssn = 4;
@@ -546,22 +550,17 @@ class Account final :
   std::string* _internal_mutable_date_opened();
   public:
 
-  // required string account_number = 6;
-  bool has_account_number() const;
+  // required int32 balance = 6;
+  bool has_balance() const;
   private:
-  bool _internal_has_account_number() const;
+  bool _internal_has_balance() const;
   public:
-  void clear_account_number();
-  const std::string& account_number() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_account_number(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_account_number();
-  PROTOBUF_NODISCARD std::string* release_account_number();
-  void set_allocated_account_number(std::string* account_number);
+  void clear_balance();
+  int32_t balance() const;
+  void set_balance(int32_t value);
   private:
-  const std::string& _internal_account_number() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_account_number(const std::string& value);
-  std::string* _internal_mutable_account_number();
+  int32_t _internal_balance() const;
+  void _internal_set_balance(int32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:week2Eval.Account)
@@ -579,10 +578,188 @@ class Account final :
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::week2Eval::Account_Transaction > transactions_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr first_name_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr last_name_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr account_id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr account_number_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr ssn_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr date_opened_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr account_number_;
+  int32_t balance_;
+  friend struct ::TableStruct_accounts_2eproto;
+};
+// -------------------------------------------------------------------
+
+class AccountList final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:week2Eval.AccountList) */ {
+ public:
+  inline AccountList() : AccountList(nullptr) {}
+  ~AccountList() override;
+  explicit constexpr AccountList(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  AccountList(const AccountList& from);
+  AccountList(AccountList&& from) noexcept
+    : AccountList() {
+    *this = ::std::move(from);
+  }
+
+  inline AccountList& operator=(const AccountList& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline AccountList& operator=(AccountList&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const AccountList& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const AccountList* internal_default_instance() {
+    return reinterpret_cast<const AccountList*>(
+               &_AccountList_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(AccountList& a, AccountList& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(AccountList* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(AccountList* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  AccountList* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<AccountList>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const AccountList& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const AccountList& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(AccountList* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "week2Eval.AccountList";
+  }
+  protected:
+  explicit AccountList(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kAccountsFieldNumber = 1,
+    kNextAvailableAccountFieldNumber = 2,
+  };
+  // repeated .week2Eval.Account accounts = 1;
+  int accounts_size() const;
+  private:
+  int _internal_accounts_size() const;
+  public:
+  void clear_accounts();
+  ::week2Eval::Account* mutable_accounts(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::week2Eval::Account >*
+      mutable_accounts();
+  private:
+  const ::week2Eval::Account& _internal_accounts(int index) const;
+  ::week2Eval::Account* _internal_add_accounts();
+  public:
+  const ::week2Eval::Account& accounts(int index) const;
+  ::week2Eval::Account* add_accounts();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::week2Eval::Account >&
+      accounts() const;
+
+  // required int32 next_available_account = 2;
+  bool has_next_available_account() const;
+  private:
+  bool _internal_has_next_available_account() const;
+  public:
+  void clear_next_available_account();
+  int32_t next_available_account() const;
+  void set_next_available_account(int32_t value);
+  private:
+  int32_t _internal_next_available_account() const;
+  void _internal_set_next_available_account(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:week2Eval.AccountList)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::week2Eval::Account > accounts_;
+  int32_t next_available_account_;
   friend struct ::TableStruct_accounts_2eproto;
 };
 // ===================================================================
@@ -795,73 +972,73 @@ inline void Account::set_allocated_last_name(std::string* last_name) {
   // @@protoc_insertion_point(field_set_allocated:week2Eval.Account.last_name)
 }
 
-// required string account_id = 3;
-inline bool Account::_internal_has_account_id() const {
+// required string account_number = 3;
+inline bool Account::_internal_has_account_number() const {
   bool value = (_has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
-inline bool Account::has_account_id() const {
-  return _internal_has_account_id();
+inline bool Account::has_account_number() const {
+  return _internal_has_account_number();
 }
-inline void Account::clear_account_id() {
-  account_id_.ClearToEmpty();
+inline void Account::clear_account_number() {
+  account_number_.ClearToEmpty();
   _has_bits_[0] &= ~0x00000004u;
 }
-inline const std::string& Account::account_id() const {
-  // @@protoc_insertion_point(field_get:week2Eval.Account.account_id)
-  return _internal_account_id();
+inline const std::string& Account::account_number() const {
+  // @@protoc_insertion_point(field_get:week2Eval.Account.account_number)
+  return _internal_account_number();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void Account::set_account_id(ArgT0&& arg0, ArgT... args) {
+void Account::set_account_number(ArgT0&& arg0, ArgT... args) {
  _has_bits_[0] |= 0x00000004u;
- account_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:week2Eval.Account.account_id)
+ account_number_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:week2Eval.Account.account_number)
 }
-inline std::string* Account::mutable_account_id() {
-  std::string* _s = _internal_mutable_account_id();
-  // @@protoc_insertion_point(field_mutable:week2Eval.Account.account_id)
+inline std::string* Account::mutable_account_number() {
+  std::string* _s = _internal_mutable_account_number();
+  // @@protoc_insertion_point(field_mutable:week2Eval.Account.account_number)
   return _s;
 }
-inline const std::string& Account::_internal_account_id() const {
-  return account_id_.Get();
+inline const std::string& Account::_internal_account_number() const {
+  return account_number_.Get();
 }
-inline void Account::_internal_set_account_id(const std::string& value) {
+inline void Account::_internal_set_account_number(const std::string& value) {
   _has_bits_[0] |= 0x00000004u;
-  account_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  account_number_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* Account::_internal_mutable_account_id() {
+inline std::string* Account::_internal_mutable_account_number() {
   _has_bits_[0] |= 0x00000004u;
-  return account_id_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return account_number_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* Account::release_account_id() {
-  // @@protoc_insertion_point(field_release:week2Eval.Account.account_id)
-  if (!_internal_has_account_id()) {
+inline std::string* Account::release_account_number() {
+  // @@protoc_insertion_point(field_release:week2Eval.Account.account_number)
+  if (!_internal_has_account_number()) {
     return nullptr;
   }
   _has_bits_[0] &= ~0x00000004u;
-  auto* p = account_id_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+  auto* p = account_number_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (account_id_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
-    account_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  if (account_number_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
+    account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   return p;
 }
-inline void Account::set_allocated_account_id(std::string* account_id) {
-  if (account_id != nullptr) {
+inline void Account::set_allocated_account_number(std::string* account_number) {
+  if (account_number != nullptr) {
     _has_bits_[0] |= 0x00000004u;
   } else {
     _has_bits_[0] &= ~0x00000004u;
   }
-  account_id_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), account_id,
+  account_number_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), account_number,
       GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (account_id_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
-    account_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  if (account_number_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
+    account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:week2Eval.Account.account_id)
+  // @@protoc_insertion_point(field_set_allocated:week2Eval.Account.account_number)
 }
 
 // required string ssn = 4;
@@ -1002,73 +1179,32 @@ inline void Account::set_allocated_date_opened(std::string* date_opened) {
   // @@protoc_insertion_point(field_set_allocated:week2Eval.Account.date_opened)
 }
 
-// required string account_number = 6;
-inline bool Account::_internal_has_account_number() const {
+// required int32 balance = 6;
+inline bool Account::_internal_has_balance() const {
   bool value = (_has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
-inline bool Account::has_account_number() const {
-  return _internal_has_account_number();
+inline bool Account::has_balance() const {
+  return _internal_has_balance();
 }
-inline void Account::clear_account_number() {
-  account_number_.ClearToEmpty();
+inline void Account::clear_balance() {
+  balance_ = 0;
   _has_bits_[0] &= ~0x00000020u;
 }
-inline const std::string& Account::account_number() const {
-  // @@protoc_insertion_point(field_get:week2Eval.Account.account_number)
-  return _internal_account_number();
+inline int32_t Account::_internal_balance() const {
+  return balance_;
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void Account::set_account_number(ArgT0&& arg0, ArgT... args) {
- _has_bits_[0] |= 0x00000020u;
- account_number_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:week2Eval.Account.account_number)
+inline int32_t Account::balance() const {
+  // @@protoc_insertion_point(field_get:week2Eval.Account.balance)
+  return _internal_balance();
 }
-inline std::string* Account::mutable_account_number() {
-  std::string* _s = _internal_mutable_account_number();
-  // @@protoc_insertion_point(field_mutable:week2Eval.Account.account_number)
-  return _s;
-}
-inline const std::string& Account::_internal_account_number() const {
-  return account_number_.Get();
-}
-inline void Account::_internal_set_account_number(const std::string& value) {
+inline void Account::_internal_set_balance(int32_t value) {
   _has_bits_[0] |= 0x00000020u;
-  account_number_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  balance_ = value;
 }
-inline std::string* Account::_internal_mutable_account_number() {
-  _has_bits_[0] |= 0x00000020u;
-  return account_number_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
-}
-inline std::string* Account::release_account_number() {
-  // @@protoc_insertion_point(field_release:week2Eval.Account.account_number)
-  if (!_internal_has_account_number()) {
-    return nullptr;
-  }
-  _has_bits_[0] &= ~0x00000020u;
-  auto* p = account_number_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (account_number_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
-    account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void Account::set_allocated_account_number(std::string* account_number) {
-  if (account_number != nullptr) {
-    _has_bits_[0] |= 0x00000020u;
-  } else {
-    _has_bits_[0] &= ~0x00000020u;
-  }
-  account_number_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), account_number,
-      GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (account_number_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
-    account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:week2Eval.Account.account_number)
+inline void Account::set_balance(int32_t value) {
+  _internal_set_balance(value);
+  // @@protoc_insertion_point(field_set:week2Eval.Account.balance)
 }
 
 // repeated .week2Eval.Account.Transaction transactions = 7;
@@ -1111,9 +1247,83 @@ Account::transactions() const {
   return transactions_;
 }
 
+// -------------------------------------------------------------------
+
+// AccountList
+
+// repeated .week2Eval.Account accounts = 1;
+inline int AccountList::_internal_accounts_size() const {
+  return accounts_.size();
+}
+inline int AccountList::accounts_size() const {
+  return _internal_accounts_size();
+}
+inline void AccountList::clear_accounts() {
+  accounts_.Clear();
+}
+inline ::week2Eval::Account* AccountList::mutable_accounts(int index) {
+  // @@protoc_insertion_point(field_mutable:week2Eval.AccountList.accounts)
+  return accounts_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::week2Eval::Account >*
+AccountList::mutable_accounts() {
+  // @@protoc_insertion_point(field_mutable_list:week2Eval.AccountList.accounts)
+  return &accounts_;
+}
+inline const ::week2Eval::Account& AccountList::_internal_accounts(int index) const {
+  return accounts_.Get(index);
+}
+inline const ::week2Eval::Account& AccountList::accounts(int index) const {
+  // @@protoc_insertion_point(field_get:week2Eval.AccountList.accounts)
+  return _internal_accounts(index);
+}
+inline ::week2Eval::Account* AccountList::_internal_add_accounts() {
+  return accounts_.Add();
+}
+inline ::week2Eval::Account* AccountList::add_accounts() {
+  ::week2Eval::Account* _add = _internal_add_accounts();
+  // @@protoc_insertion_point(field_add:week2Eval.AccountList.accounts)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::week2Eval::Account >&
+AccountList::accounts() const {
+  // @@protoc_insertion_point(field_list:week2Eval.AccountList.accounts)
+  return accounts_;
+}
+
+// required int32 next_available_account = 2;
+inline bool AccountList::_internal_has_next_available_account() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool AccountList::has_next_available_account() const {
+  return _internal_has_next_available_account();
+}
+inline void AccountList::clear_next_available_account() {
+  next_available_account_ = 0;
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline int32_t AccountList::_internal_next_available_account() const {
+  return next_available_account_;
+}
+inline int32_t AccountList::next_available_account() const {
+  // @@protoc_insertion_point(field_get:week2Eval.AccountList.next_available_account)
+  return _internal_next_available_account();
+}
+inline void AccountList::_internal_set_next_available_account(int32_t value) {
+  _has_bits_[0] |= 0x00000001u;
+  next_available_account_ = value;
+}
+inline void AccountList::set_next_available_account(int32_t value) {
+  _internal_set_next_available_account(value);
+  // @@protoc_insertion_point(field_set:week2Eval.AccountList.next_available_account)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

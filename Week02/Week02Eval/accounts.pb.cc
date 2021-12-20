@@ -36,10 +36,10 @@ constexpr Account::Account(
   : transactions_()
   , first_name_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , last_name_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
-  , account_id_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
+  , account_number_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , ssn_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , date_opened_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
-  , account_number_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string){}
+  , balance_(0){}
 struct AccountDefaultTypeInternal {
   constexpr AccountDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -49,8 +49,21 @@ struct AccountDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT AccountDefaultTypeInternal _Account_default_instance_;
+constexpr AccountList::AccountList(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
+  : accounts_()
+  , next_available_account_(0){}
+struct AccountListDefaultTypeInternal {
+  constexpr AccountListDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~AccountListDefaultTypeInternal() {}
+  union {
+    AccountList _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT AccountListDefaultTypeInternal _AccountList_default_instance_;
 }  // namespace week2Eval
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_accounts_2eproto[2];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_accounts_2eproto[3];
 static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_accounts_2eproto[1];
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_accounts_2eproto = nullptr;
 
@@ -73,10 +86,10 @@ const uint32_t TableStruct_accounts_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::week2Eval::Account, first_name_),
   PROTOBUF_FIELD_OFFSET(::week2Eval::Account, last_name_),
-  PROTOBUF_FIELD_OFFSET(::week2Eval::Account, account_id_),
+  PROTOBUF_FIELD_OFFSET(::week2Eval::Account, account_number_),
   PROTOBUF_FIELD_OFFSET(::week2Eval::Account, ssn_),
   PROTOBUF_FIELD_OFFSET(::week2Eval::Account, date_opened_),
-  PROTOBUF_FIELD_OFFSET(::week2Eval::Account, account_number_),
+  PROTOBUF_FIELD_OFFSET(::week2Eval::Account, balance_),
   PROTOBUF_FIELD_OFFSET(::week2Eval::Account, transactions_),
   0,
   1,
@@ -85,32 +98,46 @@ const uint32_t TableStruct_accounts_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE
   4,
   5,
   ~0u,
+  PROTOBUF_FIELD_OFFSET(::week2Eval::AccountList, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::week2Eval::AccountList, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::week2Eval::AccountList, accounts_),
+  PROTOBUF_FIELD_OFFSET(::week2Eval::AccountList, next_available_account_),
+  ~0u,
+  0,
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 8, -1, sizeof(::week2Eval::Account_Transaction)},
   { 10, 23, -1, sizeof(::week2Eval::Account)},
+  { 30, 38, -1, sizeof(::week2Eval::AccountList)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::week2Eval::_Account_Transaction_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::week2Eval::_Account_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::week2Eval::_AccountList_default_instance_),
 };
 
 const char descriptor_table_protodef_accounts_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\016accounts.proto\022\tweek2Eval\"\257\002\n\007Account\022"
-  "\022\n\nfirst_name\030\001 \002(\t\022\021\n\tlast_name\030\002 \002(\t\022\022"
-  "\n\naccount_id\030\003 \002(\t\022\013\n\003ssn\030\004 \002(\t\022\023\n\013date_"
-  "opened\030\005 \002(\t\022\026\n\016account_number\030\006 \002(\t\0224\n\014"
-  "transactions\030\007 \003(\0132\036.week2Eval.Account.T"
-  "ransaction\032O\n\013Transaction\0220\n\004type\030\001 \002(\0162"
-  "\".week2Eval.Account.TransactionType\022\016\n\006a"
-  "mount\030\002 \002(\005\"(\n\017TransactionType\022\t\n\005DEBIT\020"
-  "\000\022\n\n\006CREDIT\020\001"
+  "\n\016accounts.proto\022\tweek2Eval\"\254\002\n\007Account\022"
+  "\022\n\nfirst_name\030\001 \002(\t\022\021\n\tlast_name\030\002 \002(\t\022\026"
+  "\n\016account_number\030\003 \002(\t\022\013\n\003ssn\030\004 \002(\t\022\023\n\013d"
+  "ate_opened\030\005 \002(\t\022\017\n\007balance\030\006 \002(\005\0224\n\014tra"
+  "nsactions\030\007 \003(\0132\036.week2Eval.Account.Tran"
+  "saction\032O\n\013Transaction\0220\n\004type\030\001 \002(\0162\".w"
+  "eek2Eval.Account.TransactionType\022\016\n\006amou"
+  "nt\030\002 \002(\005\"(\n\017TransactionType\022\t\n\005DEBIT\020\000\022\n"
+  "\n\006CREDIT\020\001\"S\n\013AccountList\022$\n\010accounts\030\001 "
+  "\003(\0132\022.week2Eval.Account\022\036\n\026next_availabl"
+  "e_account\030\002 \002(\005"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_accounts_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_accounts_2eproto = {
-  false, false, 333, descriptor_table_protodef_accounts_2eproto, "accounts.proto", 
-  &descriptor_table_accounts_2eproto_once, nullptr, 0, 2,
+  false, false, 415, descriptor_table_protodef_accounts_2eproto, "accounts.proto", 
+  &descriptor_table_accounts_2eproto_once, nullptr, 0, 3,
   schemas, file_default_instances, TableStruct_accounts_2eproto::offsets,
   file_level_metadata_accounts_2eproto, file_level_enum_descriptors_accounts_2eproto, file_level_service_descriptors_accounts_2eproto,
 };
@@ -415,7 +442,7 @@ class Account::_Internal {
   static void set_has_last_name(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
-  static void set_has_account_id(HasBits* has_bits) {
+  static void set_has_account_number(HasBits* has_bits) {
     (*has_bits)[0] |= 4u;
   }
   static void set_has_ssn(HasBits* has_bits) {
@@ -424,7 +451,7 @@ class Account::_Internal {
   static void set_has_date_opened(HasBits* has_bits) {
     (*has_bits)[0] |= 16u;
   }
-  static void set_has_account_number(HasBits* has_bits) {
+  static void set_has_balance(HasBits* has_bits) {
     (*has_bits)[0] |= 32u;
   }
   static bool MissingRequiredFields(const HasBits& has_bits) {
@@ -463,12 +490,12 @@ Account::Account(const Account& from)
     last_name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_last_name(), 
       GetArenaForAllocation());
   }
-  account_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  account_number_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    account_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+    account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (from._internal_has_account_id()) {
-    account_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_account_id(), 
+  if (from._internal_has_account_number()) {
+    account_number_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_account_number(), 
       GetArenaForAllocation());
   }
   ssn_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -487,14 +514,7 @@ Account::Account(const Account& from)
     date_opened_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_date_opened(), 
       GetArenaForAllocation());
   }
-  account_number_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (from._internal_has_account_number()) {
-    account_number_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_account_number(), 
-      GetArenaForAllocation());
-  }
+  balance_ = from.balance_;
   // @@protoc_insertion_point(copy_constructor:week2Eval.Account)
 }
 
@@ -507,9 +527,9 @@ last_name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAl
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   last_name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-account_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+account_number_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  account_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 ssn_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -519,10 +539,7 @@ date_opened_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   date_opened_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-account_number_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  account_number_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+balance_ = 0;
 }
 
 Account::~Account() {
@@ -536,10 +553,9 @@ inline void Account::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   first_name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   last_name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  account_id_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  account_number_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ssn_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   date_opened_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  account_number_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void Account::ArenaDtor(void* object) {
@@ -560,7 +576,7 @@ void Account::Clear() {
 
   transactions_.Clear();
   cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 0x0000003fu) {
+  if (cached_has_bits & 0x0000001fu) {
     if (cached_has_bits & 0x00000001u) {
       first_name_.ClearNonDefaultToEmpty();
     }
@@ -568,7 +584,7 @@ void Account::Clear() {
       last_name_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000004u) {
-      account_id_.ClearNonDefaultToEmpty();
+      account_number_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000008u) {
       ssn_.ClearNonDefaultToEmpty();
@@ -576,10 +592,8 @@ void Account::Clear() {
     if (cached_has_bits & 0x00000010u) {
       date_opened_.ClearNonDefaultToEmpty();
     }
-    if (cached_has_bits & 0x00000020u) {
-      account_number_.ClearNonDefaultToEmpty();
-    }
   }
+  balance_ = 0;
   _has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -615,13 +629,13 @@ const char* Account::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::in
         } else
           goto handle_unusual;
         continue;
-      // required string account_id = 3;
+      // required string account_number = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_account_id();
+          auto str = _internal_mutable_account_number();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
           #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "week2Eval.Account.account_id");
+          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "week2Eval.Account.account_number");
           #endif  // !NDEBUG
           CHK_(ptr);
         } else
@@ -651,14 +665,11 @@ const char* Account::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::in
         } else
           goto handle_unusual;
         continue;
-      // required string account_number = 6;
+      // required int32 balance = 6;
       case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
-          auto str = _internal_mutable_account_number();
-          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          #ifndef NDEBUG
-          ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "week2Eval.Account.account_number");
-          #endif  // !NDEBUG
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
+          _Internal::set_has_balance(&has_bits);
+          balance_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -727,14 +738,14 @@ uint8_t* Account::_InternalSerialize(
         2, this->_internal_last_name(), target);
   }
 
-  // required string account_id = 3;
+  // required string account_number = 3;
   if (cached_has_bits & 0x00000004u) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->_internal_account_id().data(), static_cast<int>(this->_internal_account_id().length()),
+      this->_internal_account_number().data(), static_cast<int>(this->_internal_account_number().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
-      "week2Eval.Account.account_id");
+      "week2Eval.Account.account_number");
     target = stream->WriteStringMaybeAliased(
-        3, this->_internal_account_id(), target);
+        3, this->_internal_account_number(), target);
   }
 
   // required string ssn = 4;
@@ -757,14 +768,10 @@ uint8_t* Account::_InternalSerialize(
         5, this->_internal_date_opened(), target);
   }
 
-  // required string account_number = 6;
+  // required int32 balance = 6;
   if (cached_has_bits & 0x00000020u) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->_internal_account_number().data(), static_cast<int>(this->_internal_account_number().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SERIALIZE,
-      "week2Eval.Account.account_number");
-    target = stream->WriteStringMaybeAliased(
-        6, this->_internal_account_number(), target);
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(6, this->_internal_balance(), target);
   }
 
   // repeated .week2Eval.Account.Transaction transactions = 7;
@@ -801,11 +808,11 @@ size_t Account::RequiredFieldsByteSizeFallback() const {
         this->_internal_last_name());
   }
 
-  if (_internal_has_account_id()) {
-    // required string account_id = 3;
+  if (_internal_has_account_number()) {
+    // required string account_number = 3;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_account_id());
+        this->_internal_account_number());
   }
 
   if (_internal_has_ssn()) {
@@ -822,11 +829,9 @@ size_t Account::RequiredFieldsByteSizeFallback() const {
         this->_internal_date_opened());
   }
 
-  if (_internal_has_account_number()) {
-    // required string account_number = 6;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_account_number());
+  if (_internal_has_balance()) {
+    // required int32 balance = 6;
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_balance());
   }
 
   return total_size;
@@ -846,10 +851,10 @@ size_t Account::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_last_name());
 
-    // required string account_id = 3;
+    // required string account_number = 3;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_account_id());
+        this->_internal_account_number());
 
     // required string ssn = 4;
     total_size += 1 +
@@ -861,10 +866,8 @@ size_t Account::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_date_opened());
 
-    // required string account_number = 6;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_account_number());
+    // required int32 balance = 6;
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_balance());
 
   } else {
     total_size += RequiredFieldsByteSizeFallback();
@@ -912,7 +915,7 @@ void Account::MergeFrom(const Account& from) {
       _internal_set_last_name(from._internal_last_name());
     }
     if (cached_has_bits & 0x00000004u) {
-      _internal_set_account_id(from._internal_account_id());
+      _internal_set_account_number(from._internal_account_number());
     }
     if (cached_has_bits & 0x00000008u) {
       _internal_set_ssn(from._internal_ssn());
@@ -921,8 +924,9 @@ void Account::MergeFrom(const Account& from) {
       _internal_set_date_opened(from._internal_date_opened());
     }
     if (cached_has_bits & 0x00000020u) {
-      _internal_set_account_number(from._internal_account_number());
+      balance_ = from.balance_;
     }
+    _has_bits_[0] |= cached_has_bits;
   }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -960,8 +964,8 @@ void Account::InternalSwap(Account* other) {
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &account_id_, lhs_arena,
-      &other->account_id_, rhs_arena
+      &account_number_, lhs_arena,
+      &other->account_number_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
@@ -973,17 +977,240 @@ void Account::InternalSwap(Account* other) {
       &date_opened_, lhs_arena,
       &other->date_opened_, rhs_arena
   );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &account_number_, lhs_arena,
-      &other->account_number_, rhs_arena
-  );
+  swap(balance_, other->balance_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Account::GetMetadata() const {
   return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
       &descriptor_table_accounts_2eproto_getter, &descriptor_table_accounts_2eproto_once,
       file_level_metadata_accounts_2eproto[1]);
+}
+
+// ===================================================================
+
+class AccountList::_Internal {
+ public:
+  using HasBits = decltype(std::declval<AccountList>()._has_bits_);
+  static void set_has_next_available_account(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static bool MissingRequiredFields(const HasBits& has_bits) {
+    return ((has_bits[0] & 0x00000001) ^ 0x00000001) != 0;
+  }
+};
+
+AccountList::AccountList(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned),
+  accounts_(arena) {
+  SharedCtor();
+  if (!is_message_owned) {
+    RegisterArenaDtor(arena);
+  }
+  // @@protoc_insertion_point(arena_constructor:week2Eval.AccountList)
+}
+AccountList::AccountList(const AccountList& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      _has_bits_(from._has_bits_),
+      accounts_(from.accounts_) {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  next_available_account_ = from.next_available_account_;
+  // @@protoc_insertion_point(copy_constructor:week2Eval.AccountList)
+}
+
+inline void AccountList::SharedCtor() {
+next_available_account_ = 0;
+}
+
+AccountList::~AccountList() {
+  // @@protoc_insertion_point(destructor:week2Eval.AccountList)
+  if (GetArenaForAllocation() != nullptr) return;
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+inline void AccountList::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void AccountList::ArenaDtor(void* object) {
+  AccountList* _this = reinterpret_cast< AccountList* >(object);
+  (void)_this;
+}
+void AccountList::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void AccountList::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void AccountList::Clear() {
+// @@protoc_insertion_point(message_clear_start:week2Eval.AccountList)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  accounts_.Clear();
+  next_available_account_ = 0;
+  _has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* AccountList::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // repeated .week2Eval.Account accounts = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_accounts(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<10>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // required int32 next_available_account = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _Internal::set_has_next_available_account(&has_bits);
+          next_available_account_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* AccountList::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:week2Eval.AccountList)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .week2Eval.Account accounts = 1;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->_internal_accounts_size()); i < n; i++) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, this->_internal_accounts(i), target, stream);
+  }
+
+  cached_has_bits = _has_bits_[0];
+  // required int32 next_available_account = 2;
+  if (cached_has_bits & 0x00000001u) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_next_available_account(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:week2Eval.AccountList)
+  return target;
+}
+
+size_t AccountList::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:week2Eval.AccountList)
+  size_t total_size = 0;
+
+  // required int32 next_available_account = 2;
+  if (_internal_has_next_available_account()) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_next_available_account());
+  }
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .week2Eval.Account accounts = 1;
+  total_size += 1UL * this->_internal_accounts_size();
+  for (const auto& msg : this->accounts_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData AccountList::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    AccountList::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*AccountList::GetClassData() const { return &_class_data_; }
+
+void AccountList::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<AccountList *>(to)->MergeFrom(
+      static_cast<const AccountList &>(from));
+}
+
+
+void AccountList::MergeFrom(const AccountList& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:week2Eval.AccountList)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  accounts_.MergeFrom(from.accounts_);
+  if (from._internal_has_next_available_account()) {
+    _internal_set_next_available_account(from._internal_next_available_account());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void AccountList::CopyFrom(const AccountList& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:week2Eval.AccountList)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool AccountList::IsInitialized() const {
+  if (_Internal::MissingRequiredFields(_has_bits_)) return false;
+  if (!::PROTOBUF_NAMESPACE_ID::internal::AllAreInitialized(accounts_))
+    return false;
+  return true;
+}
+
+void AccountList::InternalSwap(AccountList* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  accounts_.InternalSwap(&other->accounts_);
+  swap(next_available_account_, other->next_available_account_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata AccountList::GetMetadata() const {
+  return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
+      &descriptor_table_accounts_2eproto_getter, &descriptor_table_accounts_2eproto_once,
+      file_level_metadata_accounts_2eproto[2]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -994,6 +1221,9 @@ template<> PROTOBUF_NOINLINE ::week2Eval::Account_Transaction* Arena::CreateMayb
 }
 template<> PROTOBUF_NOINLINE ::week2Eval::Account* Arena::CreateMaybeMessage< ::week2Eval::Account >(Arena* arena) {
   return Arena::CreateMessageInternal< ::week2Eval::Account >(arena);
+}
+template<> PROTOBUF_NOINLINE ::week2Eval::AccountList* Arena::CreateMaybeMessage< ::week2Eval::AccountList >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::week2Eval::AccountList >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

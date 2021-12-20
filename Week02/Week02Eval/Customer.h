@@ -20,8 +20,14 @@ class Customer{
 	std::vector<Transaction>* m_transactionHistory;
 
 	public:
-	//overloaded constructor. There is no default, all fields are 
-	//required
+	Customer(){
+		m_firstName = "";
+		m_lastName = "";
+		m_ssn = "";
+		m_dateOpened = "";
+		m_balance = 0;
+		m_transactionHistory = new std::vector<Transaction>();
+	}
 	Customer(std::string firstName, std::string lastName, std::string
 			ssn, std::string accNum){
 		m_firstName = firstName;
@@ -35,9 +41,13 @@ class Customer{
 	
 	//I know I need this custom destructor because I dynamically allocate
 	//for the transaction history on construction
+	//TODO: Change program structure (or maybe customer/transaction
+	//relationship) to avoid issues leaking memory and creating dangling
+	//pointers inside containers (think about how search copies things
+	//and when destructors get called
 	~Customer(){
 		//std::cout << "inside of Customer's destructor" <<std::endl;
-		delete m_transactionHistory;
+		//delete m_transactionHistory;
 	}
 	
 	//getters and setters
@@ -81,8 +91,13 @@ class Customer{
 		dateString = monString + yearString;
 		return dateString;
 	}
+
+	void setDateOpened(const std::string& otherDate){
+		m_dateOpened = otherDate;
+	}
 	
-	void setAccNum(int accNum){
+	void setAccountNumber(std::string accNum){
+		
 		m_accountNumber = accNum; 
 	}
 	
@@ -107,7 +122,7 @@ class Customer{
 	}
 	
 	//get a pointer to the transaction history
-	std::vector<Transaction>* get_transactions(){
+	std::vector<Transaction>* getTransactions(){
 		return m_transactionHistory;
 	}
 	//there is no setter for transaction history. I don't think it makes any

@@ -12,12 +12,13 @@
 #include <cassert>
 #include "Prompts.h"
 #include "Transaction.h"
+
 //Protobuf related stuff
 #include "accounts.pb.h"
-
+#include <fstream>
 
 using namespace std;
-#define DEBUG
+//#define DEBUG
 
 
 
@@ -57,9 +58,32 @@ void showLoginPrompt(){
 
 //displays the home prompt and handles all the commands that can be executed
 void showHomePrompt(){
+	week2Eval::AccountList accountList;
 	std::list<Customer> customerList;
+	const std::string iOFileName = "accountsIO.pb";
 	int nextAccountNumber = 1;
-	std::string homeCommand = "";
+	//since we've logged in, we read from the input file and populate
+	//the customer list if necessary here
+	
+	fstream input(iOFileName, ios::in | ios::binary);
+	//if we can't read it, make it
+	if (!input){
+		cout << iOFileName<<" not found. Creating new file." << endl;
+	}
+	//if there's something wrong, say something
+	else if (!accountList.ParseFromIstream(&input)){
+		cerr << "Failed to parse address book." << endl;
+		return;
+	}
+	
+	//
+	nextAccountNumber = populateCustomerList(customerList, accountList);
+	//clear the account list to prevent the double saving?
+	accountList.Clear();
+	
+	//close the input file so it can be used later
+	input.close();
+	std::string homeCommand;
 	//Customer cus("James","John", "111111111","1");
 	//cus.setAccNum(to_string(++nextAccountNumber));
 	//customerList.push_front(cus);
@@ -74,7 +98,10 @@ void showHomePrompt(){
 		cout << "\t6- quit"		<< endl;
 		cout << "home>";	
 		getline(cin,homeCommand);
-		if (homeCommand == "quit" || homeCommand == "6") quit();
+		if (homeCommand == "quit" || homeCommand == "6") {
+			quit(accountList, customerList, iOFileName,
+					nextAccountNumber);
+		}
 		else if (homeCommand == "show accounts" || homeCommand == "1"){
 			showAccounts(customerList);
 		}
@@ -97,7 +124,41 @@ void showHomePrompt(){
 }
 
 //handles the "quit" command by exiting the program
-void quit(){
+void quit( week2Eval::AccountList& accountList,
+	std::list<Customer>& customerList , const std::string& IOFileName,
+	int nextAccountNumber){
+	//logic for writing to the file and then closing that resource go here
+	for (Customer cus : customerList){
+	week2Eval::Account* account  = accountList.add_accounts();
+		account->set_first_name(cus.getFirstName());
+		account->set_last_name(cus.getLastName());
+		account->set_account_number(cus.getAccountNumber());
+		account->set_ssn(cus.getSsn());
+		account->set_date_opened(cus.getDateOpened());
+		account->set_balance(cus.getBalance());
+		//have to serialize transactions here too
+	}
+	/*
+	 *now we've written all the changes, so save it to the file and quit
+	 *We want truncate flag here because the database should reflect
+	 *all the changes made during the program running, which can 
+	 *include removing accounts. So we just save the customer list
+	 *into the database
+	 */
+	if (accountList.accounts_size() > 0){
+		accountList.set_next_available_account(nextAccountNumber);
+		fstream outFile(IOFileName, ios::out | ios::trunc | ios::binary);
+
+	if (!outFile){
+		cout << "Failed to open the output file.Creating?" << endl;
+	}
+	if (!accountList.SerializeToOstream(&outFile)){
+		cout << "Failed to write the account list." << endl;
+	}
+	outFile.close();
+	}
+	google::protobuf::ShutdownProtobufLibrary();
+		
 	cout << "logged out" << endl;
 	exit(0);
 }
@@ -109,11 +170,15 @@ void showAccounts(std::list<Customer>& customerList){
 	}
 	else{
 		for (Customer customer : customerList){
-			cout << customer.getFirstName() << " " << 
-				customer.getLastName() << " " <<
-				setfill('0') << setw(8) <<
-			       customer.getAccountNumber() << " " <<	
-				customer.getDateOpened() << endl;
+		int dollars = customer.getBalance() / 10;
+		int cents = customer.getBalance() % 100;
+		cout << setfill(' ') << setw(10) << std::left << 
+		customer.getFirstName() << " ";
+		cout << customer.getLastName() << " ";
+	        cout << "$" << dollars << "." << cents << setw(2) << " ";
+	        cout << setfill('0') << std::left << 
+			customer.getAccountNumber();
+	        cout << " " << customer.getDateOpened() << endl;
 		}	
 	}
 }
@@ -125,21 +190,53 @@ void displayAccount(std::list<Customer>& customerList){
 	cout << "account>";
 	cin >> accNum;
 	cin.ignore();
-	//bool found = false;
+	bool found = false;
+	Customer* outerCus;
 	for (Customer cus : customerList){
 		if (cus.getAccountNumber() == accNum){
-	//	found = true;
-		std::string fullSsn = cus.getSsn();
-		std::string hiddenSsn = fullSsn.substr(5,4);
-		cout << cus.getFirstName() << " " << cus.getLastName() <<
-			" " << hiddenSsn << " " << cus.getDateOpened() << " " <<
-			 setfill('0') << setw(8) << cus.getAccountNumber() << 
-			 endl;
-		return;
+			found = true;
+			outerCus = &cus;
+			printCustomerInfo(cus);
+			break;
 		}
 	}
 	//if we got here, it means we didn't find a matching account
-	cout << "invalid account" << endl;
+	if (!found){
+		cout << "invalid account" << endl;
+		return;
+	}
+	//here we let you add transactions
+	cin.ignore(); // flush the buffer
+	cout << "1: add transaction" << endl;
+	cout << "2+: Return Home" << endl;
+	string input;
+	getline(cin, input);
+	if (input =="add transaction" || input == "1"){
+		//add the transaction
+		Transaction tr = getTransactionData();
+		cout << "Transaction has type" << tr.printType() <<
+			" and amount " << tr.getAmount() << endl;
+		//now we have the data so we add it to the account
+		if (tr.getType() == Transaction::TrType::DEBIT
+				&& tr.getAmount() > outerCus->getBalance()){
+			cout << "Insufficient balance" << endl;
+		}
+		//here's the "it's debit and we have enough" case
+		else if (tr.getType() == Transaction::TrType::DEBIT){
+			outerCus->setBalance(outerCus->getBalance() 
+					- tr.getAmount());
+		}
+		//the credit case
+		else {
+			outerCus->setBalance(outerCus->getBalance()
+					- tr.getAmount());
+		}
+
+
+		outerCus->getTransactions()->push_back(tr);
+		cout << "Transaction recorded." <<endl;
+	}
+	//implicit else
 }
 
 //searches the customer list. Any partial matches are pushed on the back
@@ -285,7 +382,7 @@ void createAccount(std::list<Customer>& customerList, int& nextAccountNumber){
 	}
 	//if we made it here, that means the name and ssn are valid, so we make
 	//a new account and push it onto the customer list
-	Customer newCus(firstName,lastName, ssn, to_string(nextAccountNumber++));
+	Customer newCus(firstName,lastName, ssn, to_string(nextAccountNumber++)); 
 	customerList.push_back(newCus);
 
 
@@ -346,6 +443,85 @@ bool checkSsn(std::string& ssn){
 	return true;
 }
 
+//populate the customer list from what we retrieve from the accounts list file
+int populateCustomerList(std::list<Customer>& customers, week2Eval::AccountList& accounts){
+	Customer cus;
+	for (int i = 0; i < accounts.accounts_size();i++){
+		const week2Eval::Account& account = accounts.accounts(i);
+		cus.setFirstName(account.first_name());
+		cus.setLastName(account.last_name());
+		cus.setSsn(account.ssn());
+		cus.setAccountNumber(account.account_number());
+		cus.setDateOpened(account.date_opened());
+		cus.setBalance(account.balance());
+		customers.push_back(cus);
+	}
+	
+	return accounts.next_available_account();
+}
+//get the required info to build a transaction. Returns the amount -1 if there's not
+//enough moneyor you did something invalid, triggering the loop in display
+Transaction getTransactionData(){
+	string type;
+	while (type != "credit" && type != "debit"){
+		cout << "Enter credit or debit" << endl;
+		getline(cin, type);
+	}
+	Transaction::TrType trType;
+	if (type == "credit") {
+		trType = Transaction::TrType::CREDIT;
+	}
+	else {
+		trType = Transaction::TrType::DEBIT;
+	}
+	
+	cout << "Enter an amount in dollars and cents." << endl;
+	string input;
+	cin >> input;
+	//try to parse the string 
+	int money=parseInputToCurrency(input);
+	if ( money == -1){
+		cout << "Please enter a positive number in decimal notation" << endl;
+		Transaction tr(Transaction::TrType::DEBIT,-1);
+		return tr;
+	}
+	else{
+		// just build the transaction and return it
+		Transaction tr(trType, money);
+		return tr;
+	}
+	
+}
+//take an input string and turn it into an amount of cents if it's valid
+int parseInputToCurrency(string& input){
+	//neg number means invlaid
+	int amount=-1;
+	string dollarsPart = input.substr(0,input.find('.'));
+	string centsPart = input.substr(input.find('.')+1,input.length());
+	const char* dollarsP = dollarsPart.c_str();
+	const char* centsP = centsPart.c_str();
+	int dollars = atoi(dollarsP);
+	int cents = atoi(centsP);
+	if (dollars < 0 || cents < 0){
+		return -1;
+	}
+	else {
+		amount = dollars * 100 + cents;
+	}
+	return amount;
+	//parse the string for the decimal point
+	
+}
+//prints a customer's information to the terminal, used by display
+void printCustomerInfo(Customer& cus){
+	std::string fullSsn = cus.getSsn();
+	std::string hiddenSsn = fullSsn.substr(5,4);
+	cout << cus.getFirstName() << " " << cus.getLastName() <<
+		" " << hiddenSsn << " " << cus.getDateOpened() << " " <<
+		setfill('0') << setw(8) << cus.getAccountNumber() << 
+		endl;
+	
+}
 bool run_tests(){
 	//test customer
 	Customer cus("John","James","111111111","10");
@@ -407,6 +583,9 @@ bool run_tests(){
 	//tr.setType(Transaction::TrType::DEBIT);
 	//tr.setAmount(100);
 	assert(tr.getEffectiveDate() == "Dec 19 2021");
+	//more tests here for customers with transactions, adding transactions
+	//etc
+
 	return true;	
 	
 }
