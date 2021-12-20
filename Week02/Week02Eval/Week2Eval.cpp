@@ -175,7 +175,7 @@ void showAccounts(std::list<Customer>& customerList){
 		cout << setfill(' ') << setw(10) << std::left << 
 		customer.getFirstName() << " ";
 		cout << customer.getLastName() << " ";
-	        cout << "$" << dollars << "." << cents << setw(2) << " ";
+	        cout << "$" <<setw(4) << setfill('0') << dollars << "." << cents << setw(2) << " ";
 	        cout << setfill('0') << std::left << 
 			customer.getAccountNumber();
 	        cout << " " << customer.getDateOpened() << endl;
@@ -206,7 +206,7 @@ void displayAccount(std::list<Customer>& customerList){
 		return;
 	}
 	//here we let you add transactions
-	cin.ignore(); // flush the buffer
+	//cin.ignore(); // flush the buffer
 	cout << "1: add transaction" << endl;
 	cout << "2+: Return Home" << endl;
 	string input;
@@ -217,26 +217,17 @@ void displayAccount(std::list<Customer>& customerList){
 		cout << "Transaction has type" << tr.printType() <<
 			" and amount " << tr.getAmount() << endl;
 		//now we have the data so we add it to the account
-		if (tr.getType() == Transaction::TrType::DEBIT
-				&& tr.getAmount() > outerCus->getBalance()){
-			cout << "Insufficient balance" << endl;
-		}
-		//here's the "it's debit and we have enough" case
-		else if (tr.getType() == Transaction::TrType::DEBIT){
-			outerCus->setBalance(outerCus->getBalance() 
-					- tr.getAmount());
-		}
+		if (!outerCus->isTransactionPossible(tr)){
+			cout << "Insufficient balance." << endl;
+			}	
 		//the credit case
 		else {
-			outerCus->setBalance(outerCus->getBalance()
-					- tr.getAmount());
+			outerCus->adjustBalance(tr);
+			outerCus->registerTransaction(tr);
 		}
 
-
-		outerCus->getTransactions()->push_back(tr);
-		cout << "Transaction recorded." <<endl;
 	}
-	//implicit else
+
 }
 
 //searches the customer list. Any partial matches are pushed on the back
@@ -459,8 +450,8 @@ int populateCustomerList(std::list<Customer>& customers, week2Eval::AccountList&
 	
 	return accounts.next_available_account();
 }
-//get the required info to build a transaction. Returns the amount -1 if there's not
-//enough moneyor you did something invalid, triggering the loop in display
+//get the required info to build a transaction. Returns the amount -1 if 
+//you did something invalid, triggering the loop in display
 Transaction getTransactionData(){
 	string type;
 	while (type != "credit" && type != "debit"){
