@@ -1,0 +1,28 @@
+//compile with  -I/usr/local/include -L/usr/localc/lib -lprotobuf Week2Eval.cpp accounts.pb.cc
+  
+syntax = "proto2";
+
+package week2Eval;
+
+message Account {
+	required string first_name = 1;
+	required string last_name = 2;
+	required string account_id = 3;
+	required string ssn = 4;
+	required string date_opened = 5;
+	required string account_number = 6;
+	
+	enum TransactionType {
+		DEBIT = 0;
+		CREDIT = 1;
+	}
+	
+	message Transaction {
+		required TransactionType type = 1;
+		required int32 amount = 2;
+	}
+	
+	repeated Transaction transactions = 7;
+	
+
+}
