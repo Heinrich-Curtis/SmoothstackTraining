@@ -12,7 +12,6 @@
 #include <cassert>
 #include "Prompts.h"
 #include "Transaction.h"
-
 //Protobuf related stuff
 #include "accounts.pb.h"
 #include <fstream>
@@ -59,7 +58,7 @@ void showLoginPrompt(){
 //displays the home prompt and handles all the commands that can be executed
 void showHomePrompt(){
 	week2Eval::AccountList accountList;
-	std::list<Customer> customerList;
+	std::list<Customer*>* customerList = new std::list<Customer*>();
 	const std::string iOFileName = "accountsIO.pb";
 	int nextAccountNumber = 1;
 	//since we've logged in, we read from the input file and populate
@@ -125,17 +124,17 @@ void showHomePrompt(){
 
 //handles the "quit" command by exiting the program
 void quit( week2Eval::AccountList& accountList,
-	std::list<Customer>& customerList , const std::string& IOFileName,
+	std::list<Customer*>* customerList , const std::string& IOFileName,
 	int nextAccountNumber){
 	//logic for writing to the file and then closing that resource go here
-	for (Customer cus : customerList){
+	for (Customer* cus : *customerList){
 	week2Eval::Account* account  = accountList.add_accounts();
-		account->set_first_name(cus.getFirstName());
-		account->set_last_name(cus.getLastName());
-		account->set_account_number(cus.getAccountNumber());
-		account->set_ssn(cus.getSsn());
-		account->set_date_opened(cus.getDateOpened());
-		account->set_balance(cus.getBalance());
+		account->set_first_name(cus->getFirstName());
+		account->set_last_name(cus->getLastName());
+		account->set_account_number(cus->getAccountNumber());
+		account->set_ssn(cus->getSsn());
+		account->set_date_opened(cus->getDateOpened());
+		account->set_balance(cus->getBalance());
 		//have to serialize transactions here too
 	}
 	/*
@@ -164,27 +163,28 @@ void quit( week2Eval::AccountList& accountList,
 }
 
 //handles the behavior of the show account command
-void showAccounts(std::list<Customer>& customerList){
-	if (customerList.empty()){
+void showAccounts(std::list<Customer*>* customerList){
+	if (customerList->empty()){
 		cout <<"There are no accounts" << endl;
 	}
 	else{
-		for (Customer customer : customerList){
-		int dollars = customer.getBalance() / 10;
-		int cents = customer.getBalance() % 100;
+		for (Customer* customer : *customerList){
+		int dollars = customer->getBalance() / 100;
+		int cents = customer->getBalance() % 100;
 		cout << setfill(' ') << setw(10) << std::left << 
-		customer.getFirstName() << " ";
-		cout << customer.getLastName() << " ";
-	        cout << "$" <<setw(4) << setfill('0') << dollars << "." << cents << setw(2) << " ";
-	        cout << setfill('0') << std::left << 
-			customer.getAccountNumber();
-	        cout << " " << customer.getDateOpened() << endl;
+		customer->getFirstName() << " ";
+		cout << setw(10) << customer->getLastName() << " ";
+	        cout << "$" <<setw(6) << std::right<< dollars; 
+		cout << std::right << "." << setw(2) << setfill('0') << cents << " ";
+	        cout << setfill('0') << "#" << std::right << setw(5) << 
+			customer->getAccountNumber();
+	        cout << " " << customer->getDateOpened() << endl;
 		}	
 	}
 }
 
 //handles the behavior of the display account command
-void displayAccount(std::list<Customer>& customerList){
+void displayAccount(std::list<Customer*>* customerList){
 //show the new prompt
 	std::string accNum;
 	cout << "account>";
@@ -192,10 +192,10 @@ void displayAccount(std::list<Customer>& customerList){
 	cin.ignore();
 	bool found = false;
 	Customer* outerCus;
-	for (Customer cus : customerList){
-		if (cus.getAccountNumber() == accNum){
+	for (Customer* cus : *customerList){
+		if (cus->getAccountNumber() == accNum){
 			found = true;
-			outerCus = &cus;
+			outerCus = cus;
 			printCustomerInfo(cus);
 			break;
 		}
@@ -232,9 +232,9 @@ void displayAccount(std::list<Customer>& customerList){
 
 //searches the customer list. Any partial matches are pushed on the back
 //total matches are pushed to the front. Then 
-void searchNames(std::list<Customer>& customerList){
+void searchNames(std::list<Customer*>* customerList){
  //start a new list
-	std::list<Customer> searchResults;
+	std::list<Customer*> searchResults;
 	cout << "name>";
  //use an iterator to go through customers and check first and last name
  	std::string fullName,firstName, lastName;
@@ -245,15 +245,15 @@ void searchNames(std::list<Customer>& customerList){
 			firstName.length());
 	//cout << firstName << " " << lastName << endl;
 	//cout << "customer list size: " << customerList.size();	
- 	for (Customer cus : customerList){
+ 	for (Customer* cus : *customerList){
 		//the exact match case
 		//cout << cus.getFirstName() << cus.getLastName();
-		if (cus.getFirstName() == firstName && cus.getLastName() == 
+		if (cus->getFirstName() == firstName && cus->getLastName() == 
 			lastName){
 			searchResults.push_front(cus);
 		}
 		//the one or the other case
-		else if (cus.getFirstName() == firstName || cus.getLastName() 
+		else if (cus->getFirstName() == firstName || cus->getLastName() 
 				== lastName){
 			searchResults.push_back(cus);
 		}
@@ -266,9 +266,9 @@ void searchNames(std::list<Customer>& customerList){
 	}
 	//now we print out the search results
 	int resultNumber = 1;
-	for ( Customer cus : searchResults){
-		cout << resultNumber++ << ". " << cus.getFirstName() << " " <<
-			cus.getLastName() << endl;
+	for ( Customer* cus : searchResults){
+		cout << resultNumber++ << ". " << cus->getFirstName() << " " <<
+			cus->getLastName() << endl;
 	}
 	//home option at the end
 	cout << "Home Select Number > "<< resultNumber - 1 << endl;
@@ -284,18 +284,18 @@ void searchNames(std::list<Customer>& customerList){
 	}
 	else{
 		//print the customer data
-		std::list<Customer>::iterator it = searchResults.begin();
+		std::list<Customer*>::iterator it = searchResults.begin();
 		for (int i = 1;i < resultSelection; i++){
 			//cout << *it;
 			++it;
 		}
 		//Customer* cus = searchResults[resultSelection - 1];
-		Customer cus = *it;
-		std::string fullSsn = cus.getSsn();
+		Customer* cus = *it;
+		std::string fullSsn = cus->getSsn();
 		std::string hiddenSsn = fullSsn.substr(5,4);
-		cout << cus.getFirstName() << " " << cus.getLastName() <<
-			" " << hiddenSsn << " " << cus.getDateOpened() << " " <<
-			 setfill('0') << setw(8) << cus.getAccountNumber() << 
+		cout << cus->getFirstName() << " " << cus->getLastName() <<
+			" " << hiddenSsn << " " << cus->getDateOpened() << " " <<
+			 setfill('0') << setw(8) << cus->getAccountNumber() << 
 			 endl;
 	       cin.ignore();	
 	}
@@ -303,7 +303,7 @@ void searchNames(std::list<Customer>& customerList){
 }
 
 //create a new account, prompting for each piece separately
-void createAccount(std::list<Customer>& customerList, int& nextAccountNumber){
+void createAccount(std::list<Customer*>* customerList, int& nextAccountNumber){
 	std::string fullName, firstName, lastName, ssn;
 	bool isValid = false;
 	while(true){
@@ -355,8 +355,8 @@ void createAccount(std::list<Customer>& customerList, int& nextAccountNumber){
 		cout << "SSN>";
 		cin >> ssn;
 		isValid = checkSsn(ssn);
-		for (Customer cus : customerList){
-			if (cus.getSsn() == ssn){
+		for (Customer* cus : *customerList){
+			if (cus->getSsn() == ssn){
 				cout<< "This person already has an account"
 					<< endl;
 				cin.ignore();
@@ -373,15 +373,15 @@ void createAccount(std::list<Customer>& customerList, int& nextAccountNumber){
 	}
 	//if we made it here, that means the name and ssn are valid, so we make
 	//a new account and push it onto the customer list
-	Customer newCus(firstName,lastName, ssn, to_string(nextAccountNumber++)); 
-	customerList.push_back(newCus);
+	Customer* newCus= new Customer(firstName,lastName, ssn, to_string(nextAccountNumber++)); 
+	customerList->push_back(newCus);
 
 
 }
 
 //search the customer list by account number to locate the account, then
 //ask for confirm to delete before deleting
-void closeAccount(std::list<Customer>& customerList){
+void closeAccount(std::list<Customer*>* customerList){
 	cout << "account>";
  //use an iterator to go through customers and check first and last name
  	std::string accountNum;
@@ -394,14 +394,15 @@ void closeAccount(std::list<Customer>& customerList){
 
 	//cout << firstName << " " << lastName << endl;
 	//cout << "customer list size: " << customerList.size();	
- 	for (Customer cus : customerList){
-		if (cus.getAccountNumber() == accountNum){
+ 	for (Customer* cus : *customerList){
+		if (cus->getAccountNumber() == accountNum){
 			cout << "Are you sure you want to delete account number "<<
-				cus.getAccountNumber()<< "? (y/n)"<<endl;
+				cus->getAccountNumber()<< "? (y/n)"<<endl;
 			char input;
 			cin >> input;
 			if (input == 'y' || input == 'Y'){
-				customerList.remove(cus);
+				customerList->remove(cus);
+				delete cus;
 				cin.ignore();
 				return;
 				}
@@ -435,17 +436,18 @@ bool checkSsn(std::string& ssn){
 }
 
 //populate the customer list from what we retrieve from the accounts list file
-int populateCustomerList(std::list<Customer>& customers, week2Eval::AccountList& accounts){
-	Customer cus;
+int populateCustomerList(std::list<Customer*>* customers, week2Eval::AccountList& accounts){
+	
 	for (int i = 0; i < accounts.accounts_size();i++){
 		const week2Eval::Account& account = accounts.accounts(i);
-		cus.setFirstName(account.first_name());
-		cus.setLastName(account.last_name());
-		cus.setSsn(account.ssn());
-		cus.setAccountNumber(account.account_number());
-		cus.setDateOpened(account.date_opened());
-		cus.setBalance(account.balance());
-		customers.push_back(cus);
+		Customer* cus = new Customer();
+		cus->setFirstName(account.first_name());
+		cus->setLastName(account.last_name());
+		cus->setSsn(account.ssn());
+		cus->setAccountNumber(account.account_number());
+		cus->setDateOpened(account.date_opened());
+		cus->setBalance(account.balance());
+		customers->push_back(cus);
 	}
 	
 	return accounts.next_available_account();
@@ -504,12 +506,12 @@ int parseInputToCurrency(string& input){
 	
 }
 //prints a customer's information to the terminal, used by display
-void printCustomerInfo(Customer& cus){
-	std::string fullSsn = cus.getSsn();
+void printCustomerInfo(Customer* cus){
+	std::string fullSsn = cus->getSsn();
 	std::string hiddenSsn = fullSsn.substr(5,4);
-	cout << cus.getFirstName() << " " << cus.getLastName() <<
-		" " << hiddenSsn << " " << cus.getDateOpened() << " " <<
-		setfill('0') << setw(8) << cus.getAccountNumber() << 
+	cout << cus->getFirstName() << " " << cus->getLastName() <<
+		" " << hiddenSsn << " " << cus->getDateOpened() << " " <<
+		setfill('0') << setw(8) << cus->getAccountNumber() << 
 		endl;
 	
 }
@@ -571,9 +573,10 @@ bool run_tests(){
 	
 	//transaction tests
 	Transaction tr(Transaction::TrType::DEBIT, 100);
-	//tr.setType(Transaction::TrType::DEBIT);
-	//tr.setAmount(100);
+	tr.setType(Transaction::TrType::DEBIT);
+	tr.setAmount(100);
 	assert(tr.getEffectiveDate() == "Dec 19 2021");
+	
 	//more tests here for customers with transactions, adding transactions
 	//etc
 
