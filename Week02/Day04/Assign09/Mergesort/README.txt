@@ -1,1 +1,1 @@
-this problem is incomplete right now as I focus on the evaluation. I will complete this in the coming week.
+Now complete. I really want to learn to do this with the STL using std::distance, std::range and std::merge. I'm going to working on that this weekend.
