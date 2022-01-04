@@ -43,8 +43,7 @@ class Person {
 		
 				if (persons[i]->name == name){
 					//here's where we construct a new one
-					//from the old one, delete the old one
-					//and put the new one in its place
+					//from the old one, 
 					Person* p = new Person (persons[i]);
 					delete persons[i];
 					persons[i] = p;
@@ -77,6 +76,7 @@ int main(){
 		if (p == nullptr) break;
 		cout << p->name << " : " << p->count <<endl; 
 	}
+	//clean up heap memory
 	int i = 0;
 	while (Person::persons[i] != nullptr){
 		delete Person::persons[i];
