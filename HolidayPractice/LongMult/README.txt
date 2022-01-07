@@ -22,6 +22,9 @@ actually get multiply and simulate multiply working.
 To see the current tests of fully implemented functionality, use "make runTests" and 
 then run runTests
 
-ISSUES
+ KNOWN ISSUES
 ------------------------------------------------------------------------------
 Just getting stuck a lot and going slow, no total stops yet.
+
+Right now, symbAdd doesn't check to see if we've overflowed the array (the sum
+is a 65-digit number). I'll address this in the near future.
