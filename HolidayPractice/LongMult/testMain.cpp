@@ -31,7 +31,6 @@ namespace {
 		//check overflow
 		std::string oneOver("9223372036854775808");
 		std::string exactLimit("9223372036854775807");
-
 		BigNumber plusOne(oneOver);
 		EXPECT_TRUE(plusOne.getOverflow());
 		BigNumber exactsies(exactLimit);
@@ -45,6 +44,7 @@ namespace {
 	}
 
 	TEST(BasicTests, AddMultiply){
+		//test add
 		BigNumber two(2);
 		BigNumber three(3);
 		const char twelve[64] = {"12"};
@@ -57,12 +57,12 @@ namespace {
 		const char nineninetynine[64] = {"999"};
 		std::string oneonethreefive = two.symbAdd(onethirtysix, nineninetynine);
 		EXPECT_EQ(oneonethreefive,"1135");
-		BigNumber res;
-		BigNumber six = two.multiply(three,res);
-		//EXPECT_EQ(res.number(), "6");
+		//test multiply
+		BigNumber six = two.multiply(three);
+		EXPECT_EQ(six.number(), "6");
 		BigNumber zero(0);
-		res = two.multiply(zero, res);
-		//EXPECT_EQ(res.number(),"0");
+		BigNumber res = two.multiply(zero);
+		EXPECT_EQ(res.number(),"0");
 	}
 }
 

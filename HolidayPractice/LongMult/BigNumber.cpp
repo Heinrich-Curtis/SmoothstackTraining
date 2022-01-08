@@ -35,13 +35,12 @@ BigNumber::BigNumber(std::string& input){
  *	method and the one provided as the argument) and stores the output
  *	in the BigNumber output
  */
-BigNumber BigNumber::multiply(BigNumber& input, BigNumber& output){
+BigNumber BigNumber::multiply(BigNumber& input){
 	//get both numbers in their own arrays, a result object, and a
-	BigNumber res;
-	
+	BigNumber res;	
 	char arg1[64];
 	char arg2[64];
-	char partialSum[64];
+	char partialSum[64] = {0};
 	//get my number and convert to string if necessary
 	if (getOverflow()){
 		strcpy(arg1,actualUnion.cnum);
@@ -62,23 +61,36 @@ BigNumber BigNumber::multiply(BigNumber& input, BigNumber& output){
 	//perform the multiplication without simulation by walking 
 	//through the array and doing memberwise multiplication with
 	//carryover		
-	std::vector<long> partialSums;
-	int carryOver = 0;
-	int powerFor10 = 0;
-	for ( int i = myLength - 1; i >= 0; --i){
-		//refresh the partial sum every new digit
-		memset(partialSum,0,64);
-		for (int j = theirLength - 1; j >= 0; --j){
-			; 
-		}
+	std::vector<char[64]> partialSums;
+	for (int i = 0; i < myLength; ++i){
+		symbMult(i, arg2, partialSums);
 	}
-	//fill in with lead zeros if necessary
 	//to do the overflow checking, we just use the constructor, which
-	//calls set and all that shit on the product	
+	for (auto elem : partialSums){
+		std::string pSum = symbAdd(partialSum,elem);
+		const char* sum = pSum.c_str();
+		strcpy(partialSum,sum);
+	}
+	std::string finalSum(partialSum);
+	//calls set and all that shit on the product
+	res = BigNumber(finalSum);	
 	return res;
 }
 
-//performs symbolic additon on 2 c-strings and returns an std::string
+//performs symbolic multiplication on a single character and a c-stringg
+//that represents a number. Pushes the obtained partial sum into a vector
+//of partial sums used to find the final product later
+void BigNumber::symbMult(int pos, char arg2[64], std::vector<char[64]>& pSums){
+	//get my length
+	int myLength;
+	//get their length
+	//get the appropriate character
+	//set the exponent part thing
+	//do a single iteration of multiplication
+	//place the partial sum into the vector	
+
+}
+//performs symbolic additon on 2 c-strings and returns a similar char array
 std::string BigNumber::symbAdd(const char arg1[64], const char arg2[64]){
 	const char* larger;
 	const char* smaller;
@@ -123,7 +135,7 @@ std::string BigNumber::symbAdd(const char arg1[64], const char arg2[64]){
 /*
  *	returns the data member of the class
  */
-std::string BigNumber::number() const {
+std::string BigNumber::number(){
 	if (!overflow){
 	return std::to_string(actualUnion.lnum);
 	}

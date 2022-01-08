@@ -27,8 +27,10 @@ class BigNumber{
 		BigNumber();
 		BigNumber(long num);
 		BigNumber(std::string& input);
-		BigNumber multiply( BigNumber& input, BigNumber& output);
-		std::string number() const;
+		BigNumber multiply(BigNumber& input);
+		void symbMult(int pos, char arg2[64], 
+				std::vector<char[64]>& pSums);
+		std::string number();
 		void set(long num);
 		void set(std::string& input);
 		bool getOverflow();
