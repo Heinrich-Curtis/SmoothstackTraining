@@ -2,10 +2,11 @@
  *	Implementation file for BigNumber class
  */
 #include "BigNumber.h"
-
+#include <iomanip>
 //we'll need these everytime we call wouldOverflow
 const long OVERFLOW_VALUE = LONG_MAX;
 const std::string STR_OVERFLOW_VALUE = std::to_string(OVERFLOW_VALUE);
+typedef std::vector<std::vector<unsigned char>*> numvec;
 /*
  *	constructor sets the member to the provided value
  */
@@ -29,6 +30,27 @@ BigNumber::BigNumber(std::string& input){
 
 }
 
+// check if the multiplication of two longs results in an overflow
+bool BigNumber::doesOverflow(long& arg1, long& arg2) const{
+		long tempProduct = arg1 * arg2;
+		//if the signs of the arguments are the same and the sign of
+		//the product is different, we know we overflowed. If not, just
+		//initialize res and return it.
+		if (((arg1 >= 0 && arg2 >= 0) && tempProduct <= 0) ||
+			((arg1 <= 0 && arg2 <= 0) && tempProduct >= 0)){
+			return true;
+		}
+		//if the signs are different and the total number of digits is 
+		//less than 63, we always fit
+		if (strlen(std::to_string(arg1).c_str()) + 
+				strlen(std::to_string(arg2).c_str()) < 63){
+			return false;
+		}
+		//if neither of the above cases is true, we probably overflow,
+		//so do it the long way
+		return true;
+}
+
 
 /*
  *	perform multiplication on two BigNumbers(the one calling the
@@ -36,8 +58,22 @@ BigNumber::BigNumber(std::string& input){
  *	in the BigNumber output
  */
 BigNumber BigNumber::multiply(BigNumber& input){
-	//get both numbers in their own arrays, a result object, and a
-	BigNumber res;	
+	//If neither number currently overflows long, and the product doesn't
+	//overflow long, we can just use the normal multiplication operator
+	//and return the object
+	BigNumber res;
+	//if either number is 0, just return a BigNumber with 0
+	if (actualUnion.lnum == 0 || input.actualUnion.lnum == 0){
+		return res = BigNumber(0);
+	}
+	if (!getOverflow() && !input.getOverflow()){
+		if (!doesOverflow(actualUnion.lnum, input.actualUnion.lnum)){
+		long product = actualUnion.lnum * input.actualUnion.lnum;
+			return res = BigNumber(product);
+		}
+
+	}
+	//in any other case, we do a lot more work
 	char arg1[64];
 	char arg2[64];
 	char partialSum[64] = {0};
@@ -58,36 +94,189 @@ BigNumber BigNumber::multiply(BigNumber& input){
 	}
 	int myLength = strlen(arg1);
 	int theirLength = strlen(arg2);
+	//have to length check
+	
 	//perform the multiplication without simulation by walking 
 	//through the array and doing memberwise multiplication with
 	//carryover		
-	std::vector<char[64]> partialSums;
-	for (int i = 0; i < myLength; ++i){
-		symbMult(i, arg2, partialSums);
+	std::vector<char*> partialSums;
+	//use the longer one as the one to iterate through so the products
+	//are the same
+	if (myLength >= theirLength){
+		for (int i = 0; i < myLength; ++i){
+			symbMult(i, arg1, arg2, partialSum);
+			char* c = new char[64]; 
+			strcpy(c,partialSum);
+			partialSums.push_back(c);
+		}
+	}
+	else {
+		for (int i = 0; i < theirLength; ++i){
+			symbMult(i, arg2, arg1, partialSum);
+			char* c = new char[64];
+			strcpy(c, partialSum);
+			partialSums.push_back(c);
+		}
 	}
 	//to do the overflow checking, we just use the constructor, which
-	for (auto elem : partialSums){
+	memset(partialSum,0,64);	
+	for (auto elem : partialSums){	
 		std::string pSum = symbAdd(partialSum,elem);
 		const char* sum = pSum.c_str();
 		strcpy(partialSum,sum);
-	}
+		delete[] elem;
+	}	
 	std::string finalSum(partialSum);
 	//calls set and all that shit on the product
 	res = BigNumber(finalSum);	
 	return res;
 }
+//no relation to anything else, just here for the assignment
+numvec* BigNumber::simulate_multiply(BigNumber& other){
+	numvec* res = new numvec;
+	std::vector<unsigned char>* mevec = vectorize();
+	res->push_back(mevec);
+	std::vector<unsigned char>* themvec = other.vectorize();
+	res->push_back(themvec);
+	//there are a number of intermediate steps equal to the number of
+	//digits in me
+	char intNum[64];
+	char sumNum[64]={0};
+	char maxSize=0; //we'll use this to get print's formatting nice
+	for (int i = 0; i <mevec->size(); ++i){
+		std::vector<unsigned char>* intVec = new std::vector<unsigned char>();
+		memset(intNum,0,64);
+		symbMult(i,(char*)number().c_str(),(char*)other.number().c_str(),intNum);
+		strcpy(sumNum,(char*)symbAdd(sumNum,intNum).c_str());
+		if (strlen(intNum) > maxSize){
+			maxSize = strlen(intNum);
+		}
+		//push all the numbers into the intVec, then push that vec
+		//into the return vector
+		for (int j = 0; j < strlen(intNum); ++j){
+			intVec->push_back(intNum[j]);
+		}
+		res->push_back(intVec);
+	}
+	//then the final result
+	std::vector<unsigned char>* intVec = new std::vector<unsigned char>();
+	std::string str(sumNum);
+	stripLeadingZeros(str);
+	strcpy(sumNum,str.c_str());
+	for (int i=0; i < strlen(sumNum);++i){
+		intVec->push_back(sumNum[i]);
+	}
+	res->push_back(intVec);
+	//lastly, push a single char to the front of the vector with the max
+	//size for pretty printing
+	memset(intNum,0,64);
+	intNum[0] = maxSize;
+	intVec = new std::vector<unsigned char>();
+	intVec->push_back(*intNum);
+	res->insert(res->begin(),intVec);
+	return res;
+}
 
-//performs symbolic multiplication on a single character and a c-stringg
-//that represents a number. Pushes the obtained partial sum into a vector
-//of partial sums used to find the final product later
-void BigNumber::symbMult(int pos, char arg2[64], std::vector<char[64]>& pSums){
+std::vector<unsigned char>* BigNumber::vectorize(){
+	std::vector<unsigned char>* vec = new std::vector<unsigned char>();
+	unsigned char num[64];
+	strcpy((char*)num,number().c_str());
+	for (int i = 0; i < strlen((char*)num); ++i){
+		vec->push_back(num[i]);
+	}
+	return vec;
+}
+
+//has no relation to anything else, just here for the assignment
+void BigNumber::print(BigNumber& other){
+	//the very first element holds the max size of the elements, which
+	//lets us do some pretty printing
+	numvec* vec = simulate_multiply(other);
+	std::vector<unsigned char>* phonyEle = (*vec)[0];
+	int maxSize = phonyEle->front();
+	delete phonyEle;
+	//first arg
+	phonyEle = (*vec)[1];
+	std::string number;
+	for (int i =0; i < phonyEle->size(); ++i){
+		number+=(*phonyEle)[i];
+	}
+	std::cout<<std::setw(maxSize)<<number<<std::endl;
+	delete phonyEle;
+	//second arg
+	phonyEle = (*vec)[2];
+	std::cout<<"x";
+	number="";
+	for (int i =0; i < phonyEle->size();++i){
+		number+= (*phonyEle)[i];
+	}
+	std::cout<<std::setw(maxSize-1)<<number<<std::endl;
+	delete phonyEle;
+	//problem line
+	std::cout<<std::setw(maxSize+1)<<std::setfill('-')<<"\n";
+	//all the intermediate numbers
+	for (int i = 3; i < vec->size() - 1; i++){
+		phonyEle = (*vec)[i];
+		for (int j =0; j < phonyEle->size(); ++j){
+			std::cout << (*phonyEle)[j];
+		}
+		delete phonyEle;
+		std::cout << std::endl;
+	}
+	//final solution line
+	std::cout << std::setw(maxSize + 1) <<std::setfill('-')<<"\n";	
+	//and finally free the outer vec
+	phonyEle = vec->back();
+	number="";
+	for (int i = 0; i < phonyEle->size(); i++){
+		number+=(*phonyEle)[i];
+	}
+	delete phonyEle;
+	std::cout<<std::setw(maxSize)<<std::setfill('0')<<number<<std::endl;
+	 delete vec;
+	
+
+}
+//performs symbolic multiplication on a single character that represents the step
+//of the multiplication (how many 0's to put at the end) and two c-strings
+//that represent numbers. Fills a result c-string with the product.
+void BigNumber::symbMult(int pos, char arg1[64], char arg2[64], char res[64]){
+	//clear res to be sure
+	memset(res,0,64);
 	//get my length
-	int myLength;
+	int myLength = strlen(arg1);
 	//get their length
-	//get the appropriate character
-	//set the exponent part thing
+	int theirLength = strlen(arg2);
+	//set the length of the product, which can be at most one more than the
+	//sum of the number of digits in the multiplication
+	int prodLength = myLength + theirLength + 1;
+	//get the appropriate character from me
+	char c = arg1[myLength - 1 - pos];
+	int val = c - '0';
+	int carryover = 0;
+	//fill in the fill 0s
+	for (int i = pos; i > 0; --i){
+		res[prodLength - 1] = '0';
+		--prodLength;
+	}
 	//do a single iteration of multiplication
 	//place the partial sum into the vector	
+	for (int i = prodLength - 1; i >=0; --i){
+		if (theirLength > 0){
+			res[i] = val * (arg2[theirLength - 1] - '0') + carryover;				
+			carryover = res[i] / 10;
+			res[i] = res[i] % 10;
+			res[i] = res[i] + '0';
+			--theirLength;
+		}
+		//if we've hit the end of either of them, just fill in 0s
+		else if (theirLength == 0){
+			res[i] = '0' + carryover;
+			carryover = 0;
+		}
+	}
+	//fill in the top spot, which may just be 0
+		res[0] = carryover + '0';
 
 }
 //performs symbolic additon on 2 c-strings and returns a similar char array

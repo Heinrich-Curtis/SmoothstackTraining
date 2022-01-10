@@ -124,17 +124,17 @@ runTests/fast:
 .PHONY : runTests/fast
 
 #=============================================================================
-# Target rules for targets named LongMult
+# Target rules for targets named LilMult
 
 # Build rule for target.
-LongMult: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 LongMult
-.PHONY : LongMult
+LilMult: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 LilMult
+.PHONY : LilMult
 
 # fast build rule for target.
-LongMult/fast:
-	$(MAKE) -f CMakeFiles/LongMult.dir/build.make CMakeFiles/LongMult.dir/build
-.PHONY : LongMult/fast
+LilMult/fast:
+	$(MAKE) -f CMakeFiles/LilMult.dir/build.make CMakeFiles/LilMult.dir/build
+.PHONY : LilMult/fast
 
 BigNumber.o: BigNumber.cpp.o
 
@@ -143,7 +143,7 @@ BigNumber.o: BigNumber.cpp.o
 # target to build an object file
 BigNumber.cpp.o:
 	$(MAKE) -f CMakeFiles/runTests.dir/build.make CMakeFiles/runTests.dir/BigNumber.cpp.o
-	$(MAKE) -f CMakeFiles/LongMult.dir/build.make CMakeFiles/LongMult.dir/BigNumber.cpp.o
+	$(MAKE) -f CMakeFiles/LilMult.dir/build.make CMakeFiles/LilMult.dir/BigNumber.cpp.o
 .PHONY : BigNumber.cpp.o
 
 BigNumber.i: BigNumber.cpp.i
@@ -153,7 +153,7 @@ BigNumber.i: BigNumber.cpp.i
 # target to preprocess a source file
 BigNumber.cpp.i:
 	$(MAKE) -f CMakeFiles/runTests.dir/build.make CMakeFiles/runTests.dir/BigNumber.cpp.i
-	$(MAKE) -f CMakeFiles/LongMult.dir/build.make CMakeFiles/LongMult.dir/BigNumber.cpp.i
+	$(MAKE) -f CMakeFiles/LilMult.dir/build.make CMakeFiles/LilMult.dir/BigNumber.cpp.i
 .PHONY : BigNumber.cpp.i
 
 BigNumber.s: BigNumber.cpp.s
@@ -163,35 +163,35 @@ BigNumber.s: BigNumber.cpp.s
 # target to generate assembly for a file
 BigNumber.cpp.s:
 	$(MAKE) -f CMakeFiles/runTests.dir/build.make CMakeFiles/runTests.dir/BigNumber.cpp.s
-	$(MAKE) -f CMakeFiles/LongMult.dir/build.make CMakeFiles/LongMult.dir/BigNumber.cpp.s
+	$(MAKE) -f CMakeFiles/LilMult.dir/build.make CMakeFiles/LilMult.dir/BigNumber.cpp.s
 .PHONY : BigNumber.cpp.s
 
-LongMult.o: LongMult.cpp.o
+LilMult.o: LilMult.cpp.o
 
-.PHONY : LongMult.o
+.PHONY : LilMult.o
 
 # target to build an object file
-LongMult.cpp.o:
-	$(MAKE) -f CMakeFiles/LongMult.dir/build.make CMakeFiles/LongMult.dir/LongMult.cpp.o
-.PHONY : LongMult.cpp.o
+LilMult.cpp.o:
+	$(MAKE) -f CMakeFiles/LilMult.dir/build.make CMakeFiles/LilMult.dir/LilMult.cpp.o
+.PHONY : LilMult.cpp.o
 
-LongMult.i: LongMult.cpp.i
+LilMult.i: LilMult.cpp.i
 
-.PHONY : LongMult.i
+.PHONY : LilMult.i
 
 # target to preprocess a source file
-LongMult.cpp.i:
-	$(MAKE) -f CMakeFiles/LongMult.dir/build.make CMakeFiles/LongMult.dir/LongMult.cpp.i
-.PHONY : LongMult.cpp.i
+LilMult.cpp.i:
+	$(MAKE) -f CMakeFiles/LilMult.dir/build.make CMakeFiles/LilMult.dir/LilMult.cpp.i
+.PHONY : LilMult.cpp.i
 
-LongMult.s: LongMult.cpp.s
+LilMult.s: LilMult.cpp.s
 
-.PHONY : LongMult.s
+.PHONY : LilMult.s
 
 # target to generate assembly for a file
-LongMult.cpp.s:
-	$(MAKE) -f CMakeFiles/LongMult.dir/build.make CMakeFiles/LongMult.dir/LongMult.cpp.s
-.PHONY : LongMult.cpp.s
+LilMult.cpp.s:
+	$(MAKE) -f CMakeFiles/LilMult.dir/build.make CMakeFiles/LilMult.dir/LilMult.cpp.s
+.PHONY : LilMult.cpp.s
 
 testMain.o: testMain.cpp.o
 
@@ -229,13 +229,13 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... runTests"
-	@echo "... LongMult"
+	@echo "... LilMult"
 	@echo "... BigNumber.o"
 	@echo "... BigNumber.i"
 	@echo "... BigNumber.s"
-	@echo "... LongMult.o"
-	@echo "... LongMult.i"
-	@echo "... LongMult.s"
+	@echo "... LilMult.o"
+	@echo "... LilMult.i"
+	@echo "... LilMult.s"
 	@echo "... testMain.o"
 	@echo "... testMain.i"
 	@echo "... testMain.s"

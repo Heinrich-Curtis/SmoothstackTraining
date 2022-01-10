@@ -43,7 +43,7 @@ namespace {
 
 	}
 
-	TEST(BasicTests, AddMultiply){
+	TEST(BasicTests, Add){
 		//test add
 		BigNumber two(2);
 		BigNumber three(3);
@@ -57,12 +57,55 @@ namespace {
 		const char nineninetynine[64] = {"999"};
 		std::string oneonethreefive = two.symbAdd(onethirtysix, nineninetynine);
 		EXPECT_EQ(oneonethreefive,"1135");
-		//test multiply
+	}
+
+	TEST(BasicTest, Multiply){	//test multiply
+		BigNumber two(2);
+		BigNumber three(3);
 		BigNumber six = two.multiply(three);
 		EXPECT_EQ(six.number(), "6");
 		BigNumber zero(0);
 		BigNumber res = two.multiply(zero);
-		EXPECT_EQ(res.number(),"0");
+		EXPECT_EQ(res.number(),"0");	
+		std::string oneOver("9223372036854775808");
+		std::string eightoheight("808");
+		std::string exactLimit("9223372036854775807");	
+		//test the products that use the extended version of multiply
+		BigNumber big1(oneOver);
+		BigNumber big2(exactLimit);
+		BigNumber lil1(eightoheight);
+		res = big2.multiply(lil1);
+		EXPECT_EQ(res.number(), "7452484605778658852056");
+		res = big1.multiply(big2);
+		EXPECT_EQ(res.number(), "85070591730234615856620279821087277056");
+		//make sure multiply works both ways
+		res = zero.multiply(big1);	
+		EXPECT_EQ(res.number(), "0");
+		res = big1.multiply(zero);
+		EXPECT_EQ(res.number(), "0");
+		res = lil1.multiply(big2);
+		EXPECT_EQ(res.number(), "7452484605778658852056");
+		BigNumber hundred = BigNumber(100);
+		res = hundred.multiply(lil1);
+		EXPECT_EQ(res.number(),"80800");
+		//negative numbers?
+		std::string nOne("-1");
+		BigNumber negOne(nOne);
+		res = negOne.multiply(lil1);
+		EXPECT_EQ(res.number(), "-808");
+	}
+
+	TEST(BasicTest, PrintSimulate){
+		BigNumber two(2);
+		std::vector<unsigned char>* num = two.vectorize();
+		unsigned char c[64] = {0};
+		int i = 0; 
+		for (auto elem : *num){
+			 c[i++] = elem;
+
+		}
+		delete num;
+		EXPECT_EQ(std::string((char*)c),"2");
 	}
 }
 

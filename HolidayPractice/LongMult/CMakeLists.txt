@@ -10,8 +10,8 @@ include_directories(${GTEST_INCLUDE_DIRS})
 string(APPEND CMAKE_CXX_FLAGS " -g -o0")
 #Link runTests with Gtest and pthread libraries
 #also remember any other cpp files the project uses
-add_executable(LongMult LongMult.cpp BigNumber.cpp)
-target_link_libraries(LongMult ${GTEST_LIBRARIES} pthread)
+add_executable(LilMult LilMult.cpp BigNumber.cpp)
+target_link_libraries(LilMult ${GTEST_LIBRARIES} pthread)
 add_executable(runTests testMain.cpp BigNumber.cpp)
 target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
 
