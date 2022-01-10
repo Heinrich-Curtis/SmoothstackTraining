@@ -9,8 +9,7 @@ message being printed to terminal).
 
 STATUS
 --------------------------------------
-Incomplete right now, but my computer just started making weird noises
-and it's kind of scaring me.
+Complete, all functionality implemented (no unit testing yet)
 
 ISSUES
 ---------------------------------------
