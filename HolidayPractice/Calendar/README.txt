@@ -19,11 +19,11 @@ None so far
 
 DISCUSSION QUESTIONS
 ---------------------------------------
-2.
+2. Testing on member functions soon(tm)
 
 3. My program is verified for leap years, that's what the isLeapYear function
 does.
 
-4.
+4. My program works for any time, even outside the unix epoch, because it's based on Zeller's Algorithm. I never make any calls to unix functions as part of my program, so I'm not limited by them.
 
 5. Valgrind reports a clean run, no memory errors or leaks.
