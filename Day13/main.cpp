@@ -53,5 +53,40 @@ int main(){
 	assert(mL2.length() == 0);
 	//move assignment operator
 	mL3 = std::move(mLi);
+//Circle/Ellipse
+	Circle c;
+	assert(c.getArea() == 0);
+	Circle c1(1.0);
+	assert(c1.getArea() < 3.16);
+	c1.setRadius(2.0);
+	assert(c1.getArea() > 6.0);
+	std::cout << "Getting/Setting Circle looks okay" <<std::endl;
+	//constructors/operators
+	Circle c2(c1);
+	assert(c1.getArea() == c2.getArea());
+	Circle c3(10.0);
+	c2 = c3;
+	assert(c2.getArea() != c1.getArea());
+	std::cout<< "Circle copies are okay" <<std::endl;
+	Circle c4(std::move(c));
+	c4 = std::move(c3);
+	std::cout << "Circle moves okay" <<std::endl;
+//Triagnge/Polygon
+	q = Point(3,4);
+	Point points[3] = {p,t,q};
+	Triangle tri2(points[0],points[1],points[2]);
+	Triangle tri1;
+	assert(tri1.getArea() == 0.0);
+	assert(tri2.getArea() == 12.0);
+	//constructors/operators
+	Triangle tri3(std::move(tri2));
+	assert(tri3.getArea() == 12.0);
+	assert(tri2.getArea() == 0);
+	tri2 = std::move(tri3);
+	tri3 = tri2;
+	Triangle tri4(tri3);
+//Rectangle and square
+
+	
 	return 0;
 }
