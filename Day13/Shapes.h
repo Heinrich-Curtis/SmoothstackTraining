@@ -279,7 +279,7 @@ class Polygon : public Shape2D {
 		float getPerimeter() const{return perimeter;}
 		void setPerimeter(float p){perimeter = p;}
 		//do we need a virtual destructor here? look for memory issues
-		virtual ~Polygon(){
+		virtual  ~Polygon(){
 			delete[] vertices;
 		}
 };
@@ -431,11 +431,7 @@ class Quadrilateral : public Polygon {
 		return *this;
 	}
 	//destructor handled by polygon's virtual destructor
-	/*
-	~Quadrilateral(){
-		delete[] vertices;
-	}
-	*/
+	//void setArea(){}
 	//perimeter. I'm not gonna do area for this one
 	void setPerimeter(){
 		float p = 0.0;
@@ -451,22 +447,111 @@ class Rectangle : public Quadrilateral {
 	//because of the angles involved, a rectangle can be 
 	//defined by exactly 2 points, either of the 2 opposing 
 	//corners give us the height and width of the rectangle
-	protected:
-		Point topLeft;
-		Point bottomRight;
 	public:
 		//default constructor
+		Rectangle(){
+			//only 2 points are needed to define a rectangle: and
+			//I establish the convention that point 0 is the top
+			//left corner and point 1 is the bottom right corner
+			//we don't need to allocate for vertices here because
+			//the constructor for quadrilateral already did it
+			//vertices = new Point[2];
+			perimeter = 0;
+			area = 0;
+		}
 		//PC
+		Rectangle(Point topLeft, Point bottomRight){
+			//vertices = new Point[2];
+			vertices[0] = topLeft;
+			vertices[1] = bottomRight;
+
+		}
 		//CC
+		Rectangle(const Rectangle& r){
+			//vertices = new Point[2];
+			vertices[0] = r.vertices[0];
+			vertices[1] = r.vertices[1];
+			perimeter = r.perimeter;
+			area = r.area;
+		}
 		//MC
+		Rectangle (Rectangle&& r){
+			vertices = r.vertices;
+			perimeter = r.perimeter;
+			area = r.area;
+			r.vertices = nullptr;
+			r.perimeter = 0;
+			r.area = 0;
+		}
 		//CAO
+		Rectangle& operator=(const Rectangle& r){
+			if (this == &r) return *this;
+			if (vertices !=nullptr){
+				delete[] vertices;
+				vertices = new Point[2];
+			}
+			vertices[0] = r.vertices[0];
+			vertices[1] = r.vertices[1];
+			perimeter = r.perimeter;
+			area = r.area;
+			return *this;
+		}
 		//MAO
+		Rectangle& operator=(Rectangle&& r){
+			if (this == &r) return *this;
+			vertices = r.vertices;
+			perimeter = r.perimeter;
+			area = r.area;
+			r.vertices = nullptr;
+			r.area = 0;
+			r.perimeter = 0;
+			return *this;
+		}
 		//destructor handled by polygon
-		//
+		/*		
+		~Rectangle(){
+			delete[] vertices;
+		}
+		*/
+		
+		//setters
+		void setArea(){
+			area = (vertices[1].x() - vertices[0].x()) *
+				(vertices[0].y() - vertices[1].y());
+		}
+		void setPerimeter(){
+			perimeter = 2 * ((vertices[1].x() - vertices[0].x())
+					+(vertices[0].y() - vertices[1].y()));
+		}
 };
 
 class Square : public Rectangle {
+	//a square is a rectangle that has 4 sides of the same length, so we
+	//only need any two points for a square
+	//
+	//make it convention that we're still looking at the topleft and bottom
+	//right corners and we're always parallel to the axes
+	//constructors
+	//leave the destructor blank and check for leaks
+	public:
+	//default constructor just calls rectangles
+	Square(){
 
+	}
+	void setArea(){
+		area = (vertices[1].x() - vertices[0].x()) * (vertices[0].y()
+				-vertices[1].y());
+	}
+
+	void setPerimeter(){
+		return Rectangle::setPerimeter();
+	}
+	//destructor handled by polygon?
+	/*
+	~Square(){
+		delete[] vertices;
+	}
+	*/
 };
 
 

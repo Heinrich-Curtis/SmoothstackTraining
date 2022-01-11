@@ -86,7 +86,10 @@ int main(){
 	tri3 = tri2;
 	Triangle tri4(tri3);
 //Rectangle and square
-
+	Rectangle r1;
+	Square s1;
+	Square s2;
+	
 	
 	return 0;
 }
