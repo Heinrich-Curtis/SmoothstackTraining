@@ -8,8 +8,7 @@ navigate to directory, run make, run executable to see output of tests
 
 STATUS
 ----------------------------------
-Complete (not actually entirely, but close enough that I'll just say so now).
-Valgrind reports not memory issues or leaks.
+Complete.Valgrind reports not memory issues or leaks.
 
 ISSUES
 ----------------------------------

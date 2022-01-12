@@ -536,7 +536,7 @@ class Square : public Rectangle {
 	public:
 	//default constructor just calls rectangles
 	Square(){
-	
+	 
 	}
 
 	//param constructor takes a single point representing the top left
@@ -558,12 +558,26 @@ class Square : public Rectangle {
 	void setPerimeter(){
 		return Rectangle::setPerimeter();
 	}
+	//need to make an explicit CAO to avoid a memory leak
+	Square& operator=(const Square& s){
+		if (this == &s) return *this;
+		if (vertices != nullptr){
+			delete[] vertices;
+			vertices = new Point[3];
+		}
+		for (int i =0; i <4; ++i){
+			vertices[i] = s.vertices[i];
+		}
+		perimeter = s.perimeter;
+		area = s.area;
+		return *this;
+	}
 	//destructor handled by polygon?
-	/*
+/*	
 	~Square(){
 		delete[] vertices;
 	}
-	*/
+*/	
 };
 
 
