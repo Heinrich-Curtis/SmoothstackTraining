@@ -460,7 +460,7 @@ class Rectangle : public Quadrilateral {
 			area = 0;
 		}
 		//PC
-		Rectangle(Point topLeft, Point bottomRight){
+		Rectangle(const Point& topLeft, const Point& bottomRight){
 			//vertices = new Point[2];
 			vertices[0] = topLeft;
 			vertices[1] = bottomRight;
@@ -536,11 +536,23 @@ class Square : public Rectangle {
 	public:
 	//default constructor just calls rectangles
 	Square(){
-
+	
 	}
+
+	//param constructor takes a single point representing the top left
+	//and an int representing the side length, and uses this to place
+	//the second vertex
+	Square(const Point& p, int sideLen){
+		vertices[0] = p;
+		vertices[1].setX(p.x() + sideLen);
+		vertices[1].setY(p.y() + sideLen);
+		//don't call set area or perim so we can do in virtual call
+	}
+	// setArea and perimeter aren't called in the constructor so we
+	// can call them via virtual pointer
 	void setArea(){
-		area = (vertices[1].x() - vertices[0].x()) * (vertices[0].y()
-				-vertices[1].y());
+		area = (vertices[1].x() - vertices[0].x()) * (vertices[1].y()
+				-vertices[0].y());
 	}
 
 	void setPerimeter(){

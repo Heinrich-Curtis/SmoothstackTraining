@@ -89,7 +89,15 @@ int main(){
 	Rectangle r1;
 	Square s1;
 	Square s2;
-	
+	Point x(0,3);
+	Point y (2,0);
+	//build a rectangle from x and y, and a square from x and a size
+	Rectangle r2(x,y);
+	r2.setArea();
+	assert(r2.getArea() == 6.0);
+	s2 = Square(x,3);
+	s2.setArea();
+	assert(s2.getArea() == 9.0); 	
 	
 	return 0;
 }
