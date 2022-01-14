@@ -4,6 +4,7 @@
  */
 #include <iostream>
 #include <string>
+#include <cassert>
 //conversion factors
 #define DOLLARS_TO_YEN 113.91
 #define DOLLARS_TO_POUND 0.73
@@ -52,6 +53,9 @@ class Yen{
 class Converter{
 	public:
 		//to dollars
+		Dollars operator()(Dollars d){
+			return d.amount;
+		}
 		Dollars operator()(Euro e){
 			return e.amount * (1/DOLLARS_TO_EURO); 
 		}
@@ -246,8 +250,30 @@ class Account{
 
 
 int main(){
-Account <Dollars, Converter> account(100);
-Account <Euro, Converter> account2(Euro(20));
-Account <Pound, Converter> account3(Pound(25));
+	Account <Dollars, Converter> account(100);
+	Account <Euro, Converter> account2(Euro(20));
+	Account <Pound, Converter> account3(Pound(25));
+	assert(account.getBalance().amount == 100);
+	assert(account2.getBalance().amount == 20);
+	//deposit
+	account.deposit(Dollars(25));
+	assert(account.getBalance().amount == 125);
+	account.deposit(Euro(8.80));
+	assert(account.getBalance().amount == 135);
+	account.deposit(Yen(1139.1));
+	assert(account.getBalance().amount == 145);
+	account.deposit(Pound(73));
+	assert(account.getBalance().amount == 245);
+	//withdraw
+	account.withdraw(Dollars(25));
+	assert(account.getBalance().amount == 220);
+	account.withdraw(Euro(8.80));
+	assert(account.getBalance().amount == 210);
+	account.withdraw(Yen(1139.1));
+	assert(account.getBalance().amount == 200);
+	//operators
+	Account<Euro, Converter> account4(88);
+	//this isn't quite what I want to be comparing here
+	assert(account.getBalance().amount >  account4.getBalance().amount);
 	return 0;
 }
