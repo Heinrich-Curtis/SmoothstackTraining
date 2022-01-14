@@ -9,10 +9,11 @@ function runs all the tests.
 
 STATUS
 ------------------------------------------------------------------------
-Mostlycomplete. The only thing not totally done is converting from non
-USD currencies into each other, I think need to put a boolean flag in it
-or something to get function overload resolution to stop complaining. My
-comparison operators also aren't doing quite what I want them to do yet.
+Mostly complete, still need to finish testing. The only thing not totally
+done is converting from non USD currencies into each other, I think need 
+to put a boolean flag in it or something to get function overload resolution 
+to stop complaining. My comparison operators also aren't doing quite what I 
+want them to do yet.
 
 ISSUES
 -------------------------------------------------------------------
