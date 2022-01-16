@@ -1,0 +1,42 @@
+#ifndef MYVEC_H
+#define MYVEC_H
+template<typename T>
+class myvector {
+private:
+    T* mData; // this is the actual data (or array)
+	  int mSize; // Size is how much data.  Capacity is how much memory.
+	  int mCapacity; // not always same as mSize, usually much larger than mSize.
+	  T mUndefined;// Lots of STL functions say that doing something naughty gets "undefined behavior".
+public:
+    myvector() {}
+    myvector(T*, int sz); // creates a vector of sz elements
+	  virtual ~myvector();
+	  myvector(const myvector<T>& other);
+	  myvector(myvector<T>&& other);
+	  myvector& operator=(const myvector<T>& other);
+	  bool operator==(const myvector<T>& other);
+	  T& operator[](int offset);
+	  void push_back(const T& t);
+	  void pop_back();
+	  T& at(int offset);
+	  void clear();
+      int size() const;
+      void reserve(int tCount); // use an algorithm to increase capacity as required
+	  int capacity() const;
+    // iterator
+    class iterator {
+        friend myvector;
+        myvector* myvec;
+        int current; // offset 
+    public:
+        iterator(myvector* myvec, int offset) {}
+        void operator++() {}
+        void operator--() {}
+        bool operator==(const iterator&);
+        bool operator!=(const iterator&);
+        T& operator*();
+    };
+    iterator begin() const; // dummy return
+    iterator end() const; // dummy return
+};
+#endif
