@@ -96,7 +96,7 @@ void printError(){
 }
 
 //process input
-void processInput(string& input){
+void processInput(const string& input){
 	//tokenize the input
 	vector<string> tokens;
 	stringstream in(input);

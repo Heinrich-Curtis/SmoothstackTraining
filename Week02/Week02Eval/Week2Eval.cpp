@@ -17,7 +17,7 @@
 #include <fstream>
 
 using namespace std;
-//#define DEBUG
+#define DEBUG
 
 //static test function declarations
 static bool runTransactionTests();
