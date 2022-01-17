@@ -50,7 +50,7 @@ class Yen{
 };
 
 //convert class
-class Converter{
+class DollarsConverter{
 	public:
 		//to dollars
 		Dollars operator()(Dollars d){
@@ -65,11 +65,42 @@ class Converter{
 		Dollars operator()(Yen y){
 			return y.amount * (1/DOLLARS_TO_YEN);
 		}	
-		//roll with this for now, add more currencies later
-		//(there's gonna be an overloading issue becasue the 
-		//args will be the same, maybe throw a flag in there
-		//to identify target currency type?)
 };
+
+class EuroConverter{
+	public:
+		//to dollars
+		Euro operator()(Dollars d){
+			return d.amount * DOLLARS_TO_EURO;
+		}
+		Euro operator()(Euro e){
+			return e.amount; 
+		}
+		Euro operator()(Pound p){
+			return p.amount * (1/EURO_TO_POUND);
+		}
+		Euro operator()(Yen y){
+			return y.amount * (1/EURO_TO_YEN);
+		}	
+};
+
+class PoundConverter{
+	public:
+		//to dollars
+		Pound operator()(Dollars d){
+			return d.amount * DOLLARS_TO_POUND;
+		}
+		Pound operator()(Euro e){
+			return e.amount * EURO_TO_POUND; 
+		}
+		Pound operator()(Pound p){
+			return p.amount;
+		}
+		Pound operator()(Yen y){
+			return y.amount * (1/POUND_TO_YEN);
+		}	
+};
+
 
 //Account class
 template <class T, class C>
@@ -217,30 +248,30 @@ class Account{
 
 		//cast operator
 		template <typename Q>
-		operator Account<Q, Converter>() const{
+		operator Account<Q, C>() const{
 			C c;
 			if (typeid(Q) == typeid(T)){
-				Account<Q, Converter> account(balance.amount);
+				Account<Q, C> account(balance.amount);
 				return account;
 			}
 			else{
 				Q q(c(balance));
-				Account<Q, Converter> account(q);
+				Account<Q, C> account(q);
 				return account;
 			}
 		}
 
 		template <typename R>
-		Account<R, Converter>* currency(R r){
+		Account<R, C>* currency(R r){
 			if (typeid(R) == typeid(T)){
 				R r(balance.amount);
-				Account<R,Converter>* account = new Account<R, Converter>(r);
+				Account<R,C>* account = new Account<R, C>(r);
 				return account;
 			}
 			else{
 				C c;
 				R r(c(r).amount);
-				Account<R, Converter>* account = new Account<R, Converter>(r);
+				Account<R, C>* account = new Account<R, C>(r);
 				return account;
 			}
 		}
@@ -250,9 +281,9 @@ class Account{
 
 
 int main(){
-	Account <Dollars, Converter> account(100);
-	Account <Euro, Converter> account2(Euro(20));
-	Account <Pound, Converter> account3(Pound(25));
+	Account <Dollars, DollarsConverter> account(100);
+	Account <Euro, EuroConverter> account2(Euro(20));
+	Account <Pound, PoundConverter> account3(Pound(25));
 	assert(account.getBalance().amount == 100);
 	assert(account2.getBalance().amount == 20);
 	//deposit
@@ -272,7 +303,7 @@ int main(){
 	account.withdraw(Yen(1139.1));
 	assert(account.getBalance().amount == 200);
 	//operators
-	Account<Euro, Converter> account4(88);
+	Account<Euro, EuroConverter> account4(88);
 	//this isn't quite what I want to be comparing here
 	assert(account.getBalance().amount >  account4.getBalance().amount);
 	return 0;
