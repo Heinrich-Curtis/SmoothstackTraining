@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <cassert>
+#include <iomanip>
 
 //forward declaration of a test function
 void lambdaTests();
@@ -140,7 +141,7 @@ typedef struct body{
 	 * using lambdas. we tick after the net force on the body for the
 	 * timestep has been calculated
 	 */
-	void tick(double timestep){
+	void tick(double& timestep){
 		//the new acceleration is dependent on the net force on the body
 		netForce = calcNetForce();
 		//now with the net force, we can find the acceleration
@@ -173,7 +174,6 @@ typedef struct body{
 	//print function prints a string with the characteristics to a stream
 	//as a json object-y way
 	void dump(std::ostream& stream){
-		stream.precision(10);
 		stream << "{ ";
 		stream << "id : "<< ind << ", "<<std::endl;
 		stream << "position : ["<<position.xCoord <<", " <<
@@ -181,7 +181,7 @@ typedef struct body{
 		stream << "velocity : ["<<velocity.magnitude<<", "<<
 			velocity.components.xCoord<<", "<<velocity.components.yCoord<<
 			"], "<<std::endl;
-		stream << "acceleration : ["<<acceleration.magnitude<<", "<<
+		stream <<"acceleration : ["<<acceleration.magnitude<<", "<<
 			acceleration.components.xCoord<<", "<<
 			acceleration.components.yCoord<<"] "<< std::endl;
 		stream << "}"<<std::endl;
@@ -201,14 +201,14 @@ int main(){
 	/* small mass */
 	double initial_mass = 1.0; // experiment with this!
 	/* num timesteps */
-	double k = 5; // you can experiment with this! it can be fairly large.
+	double k = 250; // you can experiment with this! it can be fairly large.
 
 
 	body bodies[N];
 	int n = N;
 	//setup the experiment
 	for (int i = 0; i < n; i++){
-		bodies[i] = body(n,i,{(double)i,0},initial_mass);	
+		bodies[i] = body(n,i,{(double)i*0.0001,0},initial_mass);	
 	}
 	//for the tnumber of timesteps, get the netForce for one body and then
 	//tick, dump to cout to check validity
@@ -217,7 +217,6 @@ int main(){
 		for (int j = 0; j < n; ++j){
 			bodies[0].forceVector[j] = bodies[0].gForceFrom(bodies[j]);
 		}
-		bodies->calcNetForce();
 		bodies[0].dump(std::cout);
 		bodies[0].tick(timestep);
 

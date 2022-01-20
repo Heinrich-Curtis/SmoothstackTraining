@@ -14,5 +14,7 @@ they will operate correctly in 2d.
 
 ISSUES
 ----------------------------------------------
-The gravitational force between two objects is currently not changing with the 
-square of the distance between them and I'm investigating why that is.
+For some reason, the velocity of a body is getting "locked" to a certain value
+after a couple hundred timesteps even though the acceleration keeps changing.
+I'm looking into why this is happening. On the bright side, I am seeing
+"orbiting" type behavior, so that's good.
