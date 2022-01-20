@@ -56,9 +56,9 @@ typedef struct body{
 		ind = 0;
 		position = {0,0};
 		//everyone starts at rest
-		netForce = {0,0,0};
-		velocity = {0,0,0};
-		acceleration = {0,0,0};
+		netForce = {{0,0},0};
+		velocity = {{0,0},0};
+		acceleration = {{0,0},0};
 	}
 	body(int n, int id, R pos, double m){
 		forceVector = new PhysVector[n];
@@ -67,9 +67,9 @@ typedef struct body{
 		ind = id;
 		position = pos;
 		//everyone starts at rest
-		netForce = {0,0,0};
-		velocity = {0,0,0};
-		acceleration = {0,0,0};
+		netForce = {{0,0},0};
+		velocity = {{0,0},0};
+		acceleration = {{0,0},0};
 		
 	}
 	//need the copy constructor and CAO or we get double free
@@ -111,7 +111,7 @@ typedef struct body{
 		PhysVector v;
 		//if we are other, skip all the math and return 0s
 		if (this->ind == other.ind){ 
-			v = {0,0,0};
+			v = {{0,0},0};
 			return v;
 		}
 		double y = other.position.yCoord - this->position.yCoord;
@@ -129,7 +129,7 @@ typedef struct body{
 	}
 	//uses the data stored int the forceVector array to calculate the net force
 	PhysVector calcNetForce(){
-		PhysVector netForce ={0,0};
+		PhysVector netForce ={{0,0},0};
 		for (int i = 0; i < vSize; ++i){
 			//add every element in forceVector to get netForce
 			netForce = netForce + forceVector[i];
@@ -201,7 +201,7 @@ int main(){
 	/* small mass */
 	double initial_mass = 1.0; // experiment with this!
 	/* num timesteps */
-	double k = 250; // you can experiment with this! it can be fairly large.
+	double k = 500; // you can experiment with this! it can be fairly large.
 
 
 	body bodies[N];
@@ -219,8 +219,6 @@ int main(){
 		}
 		bodies[0].dump(std::cout);
 		bodies[0].tick(timestep);
-
-
 	}
 
 
