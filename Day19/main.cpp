@@ -24,7 +24,7 @@ typedef struct body{
 	double mass;
 	R position;
 	PhysVector velocity;
-	PhysVector forceVector; //gonna need to keep the units straight since
+	PhysVector forceVector; //gonna need to keep the units straight
 	PhysVector acceleration;
 }body;
 
@@ -85,8 +85,7 @@ int main(){
 			return acos(xPart/hypo);
 
 		};
-		//componentize a vector: given a force vector, return the x-component
-		
+		//componentize a vector: given a force vector, return the x-component		
 		auto getForceXComponent = [](PhysVector force){
 			//get the magnitude of the direction vector, the hypoteneuse
 			//of the direction triangle
