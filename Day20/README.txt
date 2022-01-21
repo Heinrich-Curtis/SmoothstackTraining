@@ -5,6 +5,11 @@ INSTALLATION INSTRUCTIONS
 Navigate here, run make, run executable. The program will run for about a 
 minute and then produce output.json with the bodycount and ips data.
 
+The data for running this version of the program is in output.json. For easy
+comparison, the data for running the Day19 version of the program is in 
+oldOutput.json; you can see about a 25% speedup of this version over the old
+one.
+
 STATUS
 --------------------------------------------
 Complete. All functionality is implmented and valgrind reports no 
