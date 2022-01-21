@@ -31,9 +31,14 @@ typedef struct PhysVector{
 		PhysVector v;
 		v.components.xCoord = this->components.xCoord + other.components.xCoord;
 		v.components.yCoord = this->components.yCoord + other.components.yCoord;
-		v.magnitude = sqrt(v.components.xCoord * v.components.xCoord +
-			v.components.yCoord*v.components.yCoord);
+		v.magnitude = sqrt(pow(v.components.xCoord,2) +
+			pow(v.components.yCoord,2));
 		return v;
+	}
+	PhysVector(){
+		components.xCoord = 0;
+		components.yCoord = 0;
+		magnitude = 0;
 	}
 }PhysVector;
 
@@ -56,9 +61,9 @@ typedef struct body{
 		ind = 0;
 		position = {0,0};
 		//everyone starts at rest
-		netForce = {{0,0},0};
-		velocity = {{0,0},0};
-		acceleration = {{0,0},0};
+		netForce = PhysVector();
+		velocity = PhysVector();
+		acceleration = PhysVector();
 	}
 	body(int n, int id, R pos, double m){
 		forceVector = new PhysVector[n];
@@ -67,9 +72,9 @@ typedef struct body{
 		ind = id;
 		position = pos;
 		//everyone starts at rest
-		netForce = {{0,0},0};
-		velocity = {{0,0},0};
-		acceleration = {{0,0},0};
+		netForce = PhysVector();
+		velocity = PhysVector();
+		acceleration = PhysVector();
 		
 	}
 	//need the copy constructor and CAO or we get double free
@@ -108,10 +113,10 @@ typedef struct body{
 	//get gravitational force from another body
 	//Gm1m2/r^2, the force always points from this to other
 	PhysVector gForceFrom(const body& other){
-		PhysVector v;
+		PhysVector v{PhysVector()};
 		//if we are other, skip all the math and return 0s
 		if (this->ind == other.ind){ 
-			v = {{0,0},0};
+			v = PhysVector();
 			return v;
 		}
 		double y = other.position.yCoord - this->position.yCoord;
@@ -129,7 +134,7 @@ typedef struct body{
 	}
 	//uses the data stored int the forceVector array to calculate the net force
 	PhysVector calcNetForce(){
-		PhysVector netForce ={{0,0},0};
+		PhysVector netForce =PhysVector();
 		for (int i = 0; i < vSize; ++i){
 			//add every element in forceVector to get netForce
 			netForce = netForce + forceVector[i];
@@ -158,9 +163,8 @@ typedef struct body{
 				acceleration.components.xCoord * timestep;
 			velocity.components.yCoord = velocity.components.yCoord +
 				acceleration.components.yCoord * timestep;
-			velocity.magnitude = sqrt(velocity.components.xCoord * 
-				velocity.components.xCoord + velocity.components.yCoord *
-				velocity.components.yCoord);
+			velocity.magnitude = sqrt(pow(velocity.components.xCoord,2) +
+			pow(velocity.components.yCoord,2));
 		}();
 		//with the velocity, we can find the new position
 		[&](){
@@ -176,6 +180,7 @@ typedef struct body{
 	void dump(std::ostream& stream){
 		stream << "{ ";
 		stream << "id : "<< ind << ", "<<std::endl;
+		stream << "net force:"<<netForce.components.xCoord<<","<<netForce.components.yCoord<<std::endl;
 		stream << "position : ["<<position.xCoord <<", " <<
 			position.yCoord<<"], "<<std::endl;
 		stream << "velocity : ["<<velocity.magnitude<<", "<<
@@ -217,8 +222,8 @@ int main(){
 		for (int j = 0; j < n; ++j){
 			bodies[0].forceVector[j] = bodies[0].gForceFrom(bodies[j]);
 		}
-		bodies[0].dump(std::cout);
 		bodies[0].tick(timestep);
+		bodies[0].dump(std::cout);
 	}
 
 
