@@ -5,10 +5,18 @@
 #include <cmath>
 #include <cassert>
 #include <iomanip>
+#include <vector>
+#include <chrono>
+#include <fstream>
 
+//using for long chrono names
+using std::chrono::high_resolution_clock;
+using std::chrono::duration;
 //forward declaration of a test function
 void lambdaTests();
 void bodyTests();
+void printToJSON();
+void runExperiment(int numBodies, double timestep, double init_mass, int iters);
 
 /* Gravitational constant */
 const double G = 6.673e-11;
@@ -104,10 +112,37 @@ typedef struct body{
 		}
 		return *this;
 	}
-	//maybe need move constructor later
+	//maybe need move constructor later (for vector use?)
+	body(body&& other){
+		mass = other.mass;
+		vSize = other.vSize;
+		forceVector = other.forceVector;
+		ind = other.ind;
+		position = other.position;
+		velocity = other.velocity;
+		acceleration = other.acceleration;
+		other.forceVector = nullptr;
+		other.vSize = 0;
+	}
+	//MAO
+	body& operator=(body&& other){
+		if (this == &other) return *this;
+		if (forceVector != nullptr) delete[] forceVector;
+		mass = other.mass;
+		vSize = other.vSize;
+		forceVector = other.forceVector;
+		ind = other.ind;
+		position = other.position;
+		velocity = other.velocity;
+		acceleration = other.acceleration;
+		other.forceVector = nullptr;
+		other.vSize = 0;
+		return *this;
+	}
 
 	~body(){
 		if (forceVector != nullptr) delete[] forceVector;
+		vSize = 0;
 	}
 	
 	//get gravitational force from another body
@@ -193,53 +228,79 @@ typedef struct body{
 	}
 }body;
 
-void dumpAll(body* bodies, int size, std::ostream& stream);
-
 int main(){
-	
 	//get the problem working with 2 bodies in one dimension first	
 	//program parameters
 	/* N bodies */
-	const int N = 2; // this will be varied in loop (read below).
+	int numBodies[] = {10,20,50,100,200,500,1000,2000};
 	/* timestep */
 	double timestep = 0.001;  // experiment with this!
 	/* small mass */
 	double initial_mass = 1.0; // experiment with this!
 	/* num timesteps */
 	double k = 500; // you can experiment with this! it can be fairly large.
-
-
-	body bodies[N];
-	int n = N;
-	//setup the experiment
-	for (int i = 0; i < n; i++){
-		bodies[i] = body(n,i,{(double)i*0.0001,0},initial_mass);	
+	
+	//setup the json file
+	std::ofstream output;
+	//change this so it's variable based on a timestamp
+	output.open("output.json");
+	//for each of the values of numBodies (each iteration of this loop is an
+	//experiment)
+	for (int a = 0; a < 8; ++a){
+		int count = numBodies[a];
+		//start the timer
+		auto start = high_resolution_clock::now();
+		//run an experiment
+		runExperiment(count,timestep,initial_mass,k);
+		//stop the timer
+		auto end = std::chrono::high_resolution_clock::now();
+		//get the duration data
+		duration<double> time = end - start;
+		//get the ips using a final lambda
+		auto ips = [&]{return k * pow(count,2) / time.count();}();
+		//output the data to JSON file in the required format
+		[&]{output  <<"{ " << std::setw(5) << numBodies[a] <<
+		 ", "<< std::setw(10) << std::setfill(' ') << ips << " }"<<std::endl;}();
 	}
-	//for the tnumber of timesteps, get the netForce for one body and then
-	//tick, dump to cout to check validity
-	for (int i = 0; i < k; ++i){
-		//only check the first one for now, no one else moves
-		for (int j = 0; j < n; ++j){
-			bodies[0].forceVector[j] = bodies[0].gForceFrom(bodies[j]);
-		}
-		bodies[0].tick(timestep);
-		bodies[0].dump(std::cout);
-	}
-
+	//clean up and return
+	output.close();
 
 	//disable this when we get the body stuff working
 	//lambdaTests();
-	bodyTests();
+	//bodyTests();
 
 return 0;
 }
 
-//dump all the bodies in the experiment
-void dumpAll(body* bodies, int size, std::ostream& stream){
-	for (int i = 0; i < size; ++i){
-		bodies[i].dump(stream);
-	}
+void runExperiment(int numBodies, double timestep, double init_mass, int iters){
+	int b = numBodies;
+		//set up the list of bodies
+		std::vector<body> bodies;
+		for (int i = 0; i < b; i++){
+			bodies.emplace_back(body(b,i,{(double)i*0.0001,0},init_mass));	
+		}
+		//here's the actual experiment
+		//for the number of required timesteps
+		for (int i = 0; i < iters; ++i){
+			//for each body in the list
+			for(int c = 0; c < b; ++c){
+				//get the force from every other body in the list
+				for (int j = 0; j < b; ++j){
+					bodies[c].forceVector[j] = bodies[c].gForceFrom(bodies[j]);
+				}
+				//bodies[0].dump(std::cout);
+			}
+			for (int c = 0; c < b; ++c){
+				//now that we have all the partial force vectors populated
+				//for all of the bodies this timestep, everyone can tick
+				//to the next one. Now they are ready to update their 
+				//members to the next timestep together
+				bodies[c].tick(timestep);
+			}
+		}
 }
+
+
 //basic test of body and it's members
 void bodyTests(){
 	//simple default constrctor tests
