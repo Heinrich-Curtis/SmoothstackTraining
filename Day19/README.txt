@@ -1,7 +1,8 @@
 Program that uses lambdas to try and solve an n-body problem
 INSTALLATION INSTRUCTIONS
 -----------------------------------------
-Navigate here, run make, run executable
+Navigate here, run make, run executable. The program will run for about a 
+minute and then produce output.json with the bodycount and ips data.
 
 STATUS
 --------------------------------------------
