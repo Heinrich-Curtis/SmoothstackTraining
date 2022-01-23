@@ -1,0 +1,9 @@
+{ "ID/NumThreads" :   10, "IPS" :    996621 }
+{ "ID/NumThreads" :   20, "IPS" :2.02264e+06 }
+{ "ID/NumThreads" :   50, "IPS" :5.14891e+06 }
+{ "ID/NumThreads" :  100, "IPS" :1.03215e+07 }
+{ "ID/NumThreads" :  200, "IPS" :2.0763e+07 }
+{ "ID/NumThreads" :  500, "IPS" :5.20287e+07 }
+{ "ID/NumThreads" : 1000, "IPS" :1.0337e+08 }
+{ "ID/NumThreads" : 2000, "IPS" :1.90385e+08 }
+{ "ID/NumThreads" : 4000, "IPS" :3.33086e+08 }

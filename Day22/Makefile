@@ -1,8 +1,8 @@
 ####################### Makefile Template ##########################
 # Compiler settings - Can be customized.
 CC = clang++
-CXXFLAGS = -std=c++17 -Wall -g
-LDFLAGS = -pthread
+CXXFLAGS = -std=c++17 -Wall -g -pthread
+LDFLAGS = 
 
 # Makefile settings - Can be customized.
 APPNAME = virtual_ref

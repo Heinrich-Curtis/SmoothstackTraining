@@ -8,6 +8,9 @@
 #include <vector>
 #include <chrono>
 #include <fstream>
+#include <thread>
+//#include <barrier> //compiler can't find barrier for some reason
+#include <pthread.h> //vscode says it doesn't know pthread but make compiles
 
 //using for long chrono names
 using std::chrono::high_resolution_clock;
@@ -228,6 +231,32 @@ typedef struct body{
 	}
 }body;
 
+/*
+ * Here's the function that the threads in the experiment run, it uses
+ * a pair of std::barriers to ensure that all of the threads stay synchronized
+ * and are only retrieving current values from each other.
+ */
+void threadFunc(std::vector<body>& bodies, int index, double timestep, 
+	double init_mass, int iters, pthread_barrier_t& b){
+		//set up the loop for iters
+		for (int i = 0; i < iters; ++i){
+			//wait for everyone to get here
+			pthread_barrier_wait(&b);
+			//gForceFrom every other body
+			for (int j = 0; j < bodies.size(); ++j){
+				bodies[index].gForceFrom(bodies[j]);
+			}
+			//wait at barrier
+			pthread_barrier_wait(&b);
+			//tick to next iteration
+			bodies[index].tick(timestep);
+			//wait at barrier
+			//b.arrive_and_wait();
+			
+		}
+		
+}
+
 void runExperiment(int numBodies, double timestep, double init_mass, int iters){
 	int b = numBodies;
 		//set up the list of bodies
@@ -235,7 +264,24 @@ void runExperiment(int numBodies, double timestep, double init_mass, int iters){
 		for (int i = 0; i < b; i++){
 			bodies.emplace_back(body(b,i,{(double)i*0.0001,0},init_mass));	
 		}
-		//here's the actual experiment
+		//add a barrier
+		pthread_barrier_t bar;
+		pthread_barrier_init(&bar,nullptr,bodies.size());
+		//start the threads and pass them the args
+		std::vector<std::thread> threads;
+		//build all the threads
+		for (int i = 0; i < bodies.size();++i){
+			;
+			threads.emplace_back(std::thread(threadFunc,std::ref(bodies),i,timestep,
+				init_mass,iters,std::ref(bar)));
+		}
+		//destroy all the threads
+		for (int i = 0; i < bodies.size();++i){
+			threads[i].join();
+		}
+		//and that's it, main handles the timing
+
+		/*
 		//for the number of required timesteps
 		for (int i = 0; i < iters; ++i){
 			//for each body in the list
@@ -260,9 +306,9 @@ void runExperiment(int numBodies, double timestep, double init_mass, int iters){
 				//members to the next timestep together
 				bodies[c].tick(timestep);
 			}
-		}
+	}
+	*/
 }
-
 
 //basic test of body and it's members
 void bodyTests(){
@@ -361,7 +407,7 @@ int main(){
 		//get the ips using a final lambda
 		auto ips = [&]{return k * pow(count,2) / time.count();}();
 		//output the data to JSON file in the required format
-		[&]{output  <<"{ \"id\" :" << std::setw(5) << numBodies[a] <<
+		[&]{output  <<"{ \"ID/NumThreads\" :" << std::setw(5) << numBodies[a] <<
 		 ", \"IPS\" :"<< std::setw(10) << std::setfill(' ') << ips << " }"<<std::endl;}();
 	}
 	//clean up and return
