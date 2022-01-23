@@ -2,7 +2,7 @@
 # Compiler settings - Can be customized.
 CC = clang++
 CXXFLAGS = -std=c++17 -Wall -g
-LDFLAGS =
+LDFLAGS = -pthread
 
 # Makefile settings - Can be customized.
 APPNAME = virtual_ref

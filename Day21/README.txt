@@ -6,27 +6,20 @@ Navigate here, run make, run executable. The program will run for about a
 minute and then produce output.json with the bodycount and ips data.
 
 The data for running this version of the program is in output.json. For easy
-comparison, the data for running the Day19 version of the program is in 
-oldOutput.json; you can see about a 25% speedup of this version over the old
-one.
-
+comparison, the data for running older versions are in the jsons with the day
+names.
 STATUS
 --------------------------------------------
-Complete. All functionality is implmented and valgrind reports no 
-memory issues. I do notice that this version of the program has about a 
-~25% speedup when comparing IPS numbers of this program and Day 19's program.
-I was expecting more to be honest, but I would need to look a lot longer at
-my algorithms to figure out where the inefficiency is and the best way to
-address it; it's probably related to how I determine when to not do operations.
+Mostly complete. I was a little confused as to exactly what was being asked
+here, so what I went with was running my program with each experiment on a
+different thread (8 threads), and comparing the IPS values with the results
+from past experiments.
 
+I do see an approximately 7 fold speedup when running with 8 cores, which is 
+close to the ideal linear speedup of 8. Watching the program run in GDB, the 
+first 5 threads return nearly instantly, the 6th thread returns after a couple
+seconds, and the final 2 threads take significantly more time to return. 
 ISSUES
 ----------------------------------------------
-The idea behind this optimization is very simple: when we find the force 
-exerted on body a by b, we simply save the negative version of the force (by
-negating each force component), into the spot for b's force from a. So since
-each body resides in a container at index i, and the force from body b is
-stored in an internal array at index j corresponding to the index in the 
-original container, whenever we update container[i][j], we immediately save
-the negated result to container[j][i]. Then instead of iterating over the 
-entire container in both loops, the inner loop only iterates over elements
-where j >= i to skip half the calculations.
+I didn't entirely complete this assignment, but I got my program working 
+multi-threaded, so there's that.
