@@ -8,7 +8,6 @@
 #include <vector>
 #include <chrono>
 #include <fstream>
-#include <thread>
 
 //using for long chrono names
 using std::chrono::high_resolution_clock;
@@ -17,8 +16,7 @@ using std::chrono::duration;
 void lambdaTests();
 void bodyTests();
 void printToJSON();
-int runExperiment(int numBodies, double timestep, double init_mass, int iters);
-void timedExperiment(int count, double timestep, double initMass, double iters, double& result);
+void runExperiment(int numBodies, double timestep, double init_mass, int iters);
 
 /* Gravitational constant */
 const double G = 6.673e-11;
@@ -230,7 +228,7 @@ typedef struct body{
 	}
 }body;
 
-int runExperiment(int numBodies, double timestep, double init_mass, int iters){
+void runExperiment(int numBodies, double timestep, double init_mass, int iters){
 	int b = numBodies;
 		//set up the list of bodies
 		std::vector<body> bodies;
@@ -263,7 +261,6 @@ int runExperiment(int numBodies, double timestep, double init_mass, int iters){
 				bodies[c].tick(timestep);
 			}
 		}
-		return numBodies * numBodies * iters;
 }
 
 
@@ -333,16 +330,6 @@ void lambdaTests(){
 
 }
 
-//runs an experiment and returns the IPS (total interactions divided by time)
-void timedExperiment(int count, double timestep, double initMass, double iters, double& result){
-	auto start = high_resolution_clock::now();
-	int interactions = runExperiment(count,timestep,initMass,iters);
-	auto end = high_resolution_clock::now();
-	duration<double> time(end-start);
-	auto ips = [&]{return interactions / time.count();}();	
-	result = ips;
-}
-
 int main(){
 	//get the problem working with 2 bodies in one dimension first	
 	//program parameters
@@ -354,37 +341,29 @@ int main(){
 	double initial_mass = 1.0; // experiment with this!
 	/* num timesteps */
 	double k = 500; // you can experiment with this! it can be fairly large.
+	
 	//setup the json file
 	std::ofstream output;
+	//change this so it's variable based on a timestamp
 	output.open("output.json");
 	//for each of the values of numBodies (each iteration of this loop is an
 	//experiment)
-	std::vector<std::thread> threads;
-	int numThreads = 8;
-	//store all the partial sums of IPS here
-	double ipsVals[] = {0,0,0,0,0,0,0,0};
 	for (int a = 0; a < 8; ++a){
 		int count = numBodies[a];
-		//for each thread count, run a timed experiment
-		//timedExperiment(count, timestep, initial_mass, k, ipsVals[a]);
-		std::thread t(timedExperiment, count, timestep, initial_mass, k, std::ref(ipsVals[a]));
-		threads.emplace_back(std::move(t));
-		
+		//start the timer
+		auto start = high_resolution_clock::now();
+		//run an experiment
+		runExperiment(count,timestep,initial_mass,k);
+		//stop the timer
+		auto end = std::chrono::high_resolution_clock::now();
+		//get the duration data
+		duration<double> time = end - start;
+		//get the ips using a final lambda
+		auto ips = [&]{return k * pow(count,2) / time.count();}();
+		//output the data to JSON file in the required format
+		[&]{output  <<"{ \"id\" :" << std::setw(5) << numBodies[a] <<
+		 ", \"IPS\" :"<< std::setw(10) << std::setfill(' ') << ips << " }"<<std::endl;}();
 	}
-	//join all the threads
-	for (int i =0; i < 8; ++i){
-		if (threads[i].joinable()){
-			threads[i].join();
-		}
-	}
-	//sum up the ips vals
-	double finalIPS = 0;
-	for (int i = 0; i < 8; ++i){
-		finalIPS += ipsVals[i];
-	}
-	//so this is still going to be fucked when figuring the thread counts
-	[&]{output  <<"{ \"numThreads\" :" << std::setw(5) << numThreads<<
-		 ", \"IPS\" :"<< std::setw(10) << std::setfill(' ') << finalIPS << " }"<<std::endl;}();
 	//clean up and return
 	output.close();
 
