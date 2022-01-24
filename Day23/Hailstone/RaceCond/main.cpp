@@ -49,13 +49,7 @@ int main(int argc, char** argv){
 	//get the start value from input
 	uint64_t start = 0;
 	sharedArr arr;
-	try{
 	start = atoi(argv[1]);
-	}
-	catch(...){
-		std::cout<< "Error parsing input"<<std::endl;
-		return 1;
-	}
 	std:: thread t(threadFunc,std::ref(arr), start);
 	std::thread t2(threadFunc,std::ref(arr), start);
 	std::thread t3(threadFunc,std::ref(arr), start);//join the threads and print the output
