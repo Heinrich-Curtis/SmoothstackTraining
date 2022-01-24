@@ -1,0 +1,71 @@
+/*
+ *	A program that demonstrates a race condition by having 2
+ *	threads attempt to update a shared data structure
+ */
+#include <vector>
+#include <iostream>
+#include <thread>
+
+typedef struct sharedArr{
+	uint64_t arr[250];
+	int nextIndex = 0;
+
+	uint64_t& operator[](int ind){
+		return arr[ind];
+	}
+
+}sharedArr;
+//populate vec with the values of the hailstone sequence 
+uint64_t hailstone(uint64_t val){
+	if (val % 2){
+		return (val * 3) + 1;
+	}
+	else{
+		return val / 2;
+	}
+}
+//populate the vector with the hailstone sequence
+void threadFunc(sharedArr& arr, uint64_t start){	
+	while(true){
+		if (arr.nextIndex == 0){
+			arr[0] = start;
+			std::cout<<arr[arr.nextIndex] << " ";
+			++arr.nextIndex;
+		}
+		else{	
+			//terminating condition
+			if (arr[arr.nextIndex-1] == 1){
+				return;
+			}	
+			arr[arr.nextIndex] = hailstone(arr[arr.nextIndex-1]);
+			std::cout<<arr[arr.nextIndex] << " ";
+			++arr.nextIndex;
+		
+		}
+	}
+}
+
+int main(int argc, char** argv){
+	//get the start value from input
+	uint64_t start = 0;
+	sharedArr arr;
+	try{
+	start = atoi(argv[1]);
+	}
+	catch(...){
+		std::cout<< "Error parsing input"<<std::endl;
+		return 1;
+	}
+	std:: thread t(threadFunc,std::ref(arr), start);
+	std::thread t2(threadFunc,std::ref(arr), start);
+	std::thread t3(threadFunc,std::ref(arr), start);//join the threads and print the output
+	t.join();
+	t2.join();
+	t3.join();
+	/*for (int i = 0; i < arr.nextIndex; ++i){
+		std::cout << arr.arr[i] << " ";
+	}
+	*/
+	std::cout << std::endl;
+	return 0;
+}
