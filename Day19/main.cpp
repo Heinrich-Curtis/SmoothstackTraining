@@ -259,8 +259,8 @@ int main(){
 		//get the ips using a final lambda
 		auto ips = [&]{return k * pow(count,2) / time.count();}();
 		//output the data to JSON file in the required format
-		[&]{output  <<"{ " << std::setw(5) << numBodies[a] <<
-		 ", "<< std::setw(10) << std::setfill(' ') << ips << " }"<<std::endl;}();
+		[&]{output  <<"{ \"id\" :" << std::setw(5) << numBodies[a] <<
+		 ", \"IPS\" :"<< std::setw(10) << std::setfill(' ') << ips << " }"<<std::endl;}();
 	}
 	//clean up and return
 	output.close();
