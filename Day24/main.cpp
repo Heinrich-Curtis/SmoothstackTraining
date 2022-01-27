@@ -7,7 +7,7 @@ using namespace std;
 
 //this thread pushes a bunch of stuff onto the queue
 void pushingThread(ThreadSafeQueue<int>& t){
-    for (int i = 0; i < 1000; ++i){
+    for (int i = 0; i < 10; ++i){
         t.push(i);
     }
 }
@@ -15,29 +15,29 @@ void pushingThread(ThreadSafeQueue<int>& t){
 void tryPoppingThread(ThreadSafeQueue<int>& t){
     //try popping an empty queue with the reference version
     int i;
-    bool b = t.try_pop(i);
-    assert (!b);
-    //try popping an empty queue with the pointer version
-    std::shared_ptr<int> ptr = t.try_pop();
-    assert(ptr == nullptr);
-    //sleep for a while so the pushing thread can populate the queue
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    //now pop some values
-    b = t.try_pop(i);
-    assert(b);
-    std::cout<<"Returned from TSQ: " << i << std::endl;
-    ptr = t.try_pop();
-    assert(ptr != nullptr);
+    int b = t.try_pop(i);
+    if (b){
+        std::cout<<"Returned from TSQ: " << i << std::endl;
+    }
+    else{
+        std::cout<<"queue was busy, could not pop"<<std::endl;
+    }
+    shared_ptr<int> ptr = t.try_pop();
+    if (ptr){
     std::cout<<"Returned from TSQ: " << *ptr << std::endl;
-
+    }
+    else{
+        std::cout<<"queue was busy, could not pop"<<std::endl;
+    }
 }
 int main(){
     ThreadSafeQueue<int> tsq;
     assert(tsq.empty());
+    std::thread t2(pushingThread,std::ref(tsq));
     std::thread t1(tryPoppingThread, std::ref(tsq));
     //sleep for a bit so we know the first half of tryPopping is done
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::thread t2(pushingThread,std::ref(tsq));
+
+    
     t1.join();
     t2.join();
     return 0;

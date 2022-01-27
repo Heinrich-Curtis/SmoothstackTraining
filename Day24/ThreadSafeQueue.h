@@ -50,20 +50,27 @@ public:
     //returns immediately, stores the value in the reference variable,
     //can use return value for status
     bool try_pop(T& t){
-        std::lock_guard<std::mutex> lk(mut);
+        if (mut.try_lock()){
         if (q.empty()) return false;
         t = q.front();
         q.pop();
+        mut.unlock();
         return true;
+        }
+
+        return false;
     }
 
     //can't store in return value, but can return nullptr to indicate empty
     std::shared_ptr<T> try_pop(){
-        std::lock_guard<std::mutex> lk(mut);
+        if (mut.try_lock()){
         if (q.empty()) return std::shared_ptr<T>();
         std::shared_ptr<T> res(std::make_shared<T>(q.front()));
         q.pop();
+        mut.unlock();
         return res;
+        }
+        return nullptr;
     }
 
     void wait_and_pop(T& t){
