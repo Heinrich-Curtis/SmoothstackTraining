@@ -128,28 +128,60 @@ typedef struct Country{
         tradePartner->mut.unlock();
         //done 
     }
-    //check if there is enough money to service a request
-    bool haveEnoughMoney(Request& req){
-        return true;
+    //utility function to convert the amount of foreign currency
+    //to an equivalent amount of our currency
+    double convertCurrAmount(double exchRate,double forAmount){
+        return forAmount * exchRate;
     }
-
+    
     /*
      * method to adjust internal amounts based on an accepted trade. Remember
      * the request is from the perspective of the other country. So if the 
      * action is "BUY", that means we are selling (getting rid of our
      * currency for the other one)
      */
+    
     void processMyAcceptedTrade(){
+        //convert if necessary
+        double amount = req.cur.amount;
+        if (this->baseCurrency != req.cur.type){
+            amount = convertCurrAmount(
+                req.exchangeRate,req.cur.amount);
+        }
+        //we're buying, so they're selling
         if (req.action == Action::BUY){
-            
+            this->reserveCurrency.amount += amount;
+            this->forexCurrency.amount -= req.cur.amount;
+        }
+        //we're selling, so they're buying
+        else{
+            this->reserveCurrency.amount -= req.cur.amount;
+            this->forexCurrency.amount += amount; 
         }
     }
+
     //adjust our members
     void acceptTheirTrade(){
+        //copy over their request so we don't need their lock
+        tradePartner->mut.lock();
+        Request requ = tradePartner->req;
+        tradePartner->state = State::ACCEPTED;
+        tradePartner->mut.unlock();
+        double amount = requ.cur.amount;
         //convert their currency to ours
-        
-        //adjust our reserves and forex
-
+        if (this->baseCurrency != requ.cur.type){
+            amount = convertCurrAmount(
+                requ.exchangeRate,requ.cur.amount);
+        }
+        if (requ.action == Action::BUY){
+            this->reserveCurrency.amount -= amount;
+            this->forexCurrency.amount += requ.cur.amount;
+        }
+        //they're selling, so we're buying
+        else{
+            this->reserveCurrency.amount += requ.cur.amount;
+            this->forexCurrency.amount -= amount; 
+        }
     }
 
     void rejectTheirTrade(){
@@ -172,15 +204,16 @@ typedef struct Country{
         //lock 
         mut.lock();
         //check status and partner pointer
-        //nothing happening
-        if (state == State::IDLE){
+        //nothing happening, just waiting
+        if (state == State::IDLE && tradePartner == nullptr){
             mut.unlock();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             return 0;
         }
-        else if (state == State::PENDING){
-            //check the offer
-            //make a decision
+        //there is an outstanding offer to us
+        //I'm always going to prioritize an incoming trade rather than 
+        //my own trade
+        else if(tradePartner != nullptr){
             if (Country::doIAccept()){
                 //accept their offer
                 //reject their offer
@@ -190,14 +223,17 @@ typedef struct Country{
                 partner->mut.lock();
                 partner->state=State::ACCEPTED;
                 partner->mut.unlock();
-                return 2;
+                std::cout<<"Thread "<<std::this_thread::get_id()<<
+                 " accepts a trade"<<std::endl;
             }
             //reject their offer
             else{
+                std::cout<<"Thread "<<std::this_thread::get_id()<<
+                 " rejects a trade"<<std::endl;
                 mut.unlock();
                 rejectTheirTrade();
-                return 2;
             }
+            return 2;
         }
         //if we're rejected, clear the request field and change state
         //to idle, we're done
@@ -213,12 +249,14 @@ typedef struct Country{
             //adjust our own members
             processMyAcceptedTrade();
         }
-        //we're pending
+        //we're pending, waiting on them to make a decision on our offer
+        
         else{   
             mut.unlock();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             return 0;
         }
+        
         mut.unlock();
         return 2;
     }
@@ -227,7 +265,7 @@ typedef struct Country{
     void simulateTrade(){
         //Country* partner = tradePartner;
         int recCount = 0;
-        Request req1(0.5, Amount(), Action::SELL);
+        Request req1(1.50, Amount(Currency::POUNDS,20.00), Action::SELL);
         Request req2(0.5, Amount(Currency::DOLLARS,10.00), Action::BUY);
         makeRequest(tradePartner,req1);
         while(recCount < 2){
