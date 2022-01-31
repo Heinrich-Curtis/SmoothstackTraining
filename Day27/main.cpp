@@ -122,29 +122,28 @@ struct Matrix{
 				}
 			}
 		}
-
-
-
-
-
+		//initialize the memory to 0
+		void clear(){
+			for (int r = 0; r < rows; ++r){
+				for (int c = 0; c < cols; ++c){
+					data[r][c] = 0;
+				}
+			}
+		}
 	//templated function that does matrix multiplication on 2 flattened 
 	//matrices
 	
 	Matrix<T> multiply(const Matrix<T>& other){
 		//make sure the multiplication is possible. If it isn't, return a null
 		//matrix
-		Matrix<T> result = Matrix(rows,other.cols);
+		Matrix<T> result = Matrix<T>(rows,other.cols);
 		if (cols != other.rows) return result;
-		result.data = new T*[rows];
-		for (int r =0; r < result.rows; ++r){
-			result.data[r] = new T[cols];
-			memset(result.data[r],0,result.cols);
-		}
+		result.clear();
 		auto numThreads = std::thread::hardware_concurrency();
 		//std::cout<<"Multiplying with as many as "<<numThreads<<" threads" <<
 		// std::endl;
 		//initialization of private variables
-		int i =0, j=0, k=0, iOff=0, jOff=0, dimension = rows;
+		int i =0, j=0, k=0, iOff=0, jOff=0/*, dimension = rows*/;
 		T tot;
 		//flatten the matrices here
 		/*
@@ -177,36 +176,46 @@ struct Matrix{
 				}
 			}
 			*/
-			for (int i = 0; i < dimension; i++) {
-        		for(int j = 0; j < dimension; j++) {
-            		for(int k = 0; k <dimension; k++) {
+			for (int i = 0; i < result.rows; i++) {
+        		for(int j = 0; j < result.cols; j++) {
+            		for(int k = 0; k < rows; k++) {
                 		result.data[i][j] += data[i][k] * other.data[k][j];
 					}
             	}
         	}
     	}
-		//}
 		return result;
 	}
-	
-
 };
 
 void testFunc(){
 	Matrix<int> m;
+	std::cout<<"Printing a blank matrix:"<<std::endl;
 	m.print();
 	int arr[] = {1,2,3,4};
 	Matrix<int> m2(arr,2,2);
+	std::cout<< "Printing a 2x2 matrix:"<<std::endl;
 	m2.print();
 	m = std::move(m2);
 	assert(m2.data == nullptr);
 	Matrix<int> m3(arr,2,2);
+	std::cout<<"Result of squaring [[1,2],[3,4]] (multiplying it by itself): "<<std::endl;
 	Matrix<int> m4 = m.multiply(m3);
+	m4.print();
 	//assert the product of two square matrices is correct
 	assert(m4.data[0][0] == 7);
 	assert(m4.data[0][1] == 10);
 	assert(m4.data[1][0] == 15);
 	assert(m4.data[1][1] == 22);
+	int arr3[] = {1,2};
+	Matrix<int> m5(arr3,2,1);
+	Matrix<int> m6 = m3.multiply(m5);
+	//assert the product of non-square matrices
+	assert(m6.data[0][0] == 5);
+	assert(m6.data[1][0] == 11);
+	std::cout<<"Product of [[1,2],[3,4]] and [1,2] : "<<std::endl;
+	m6.print();
+
 }
 
 int main(){
