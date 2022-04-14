@@ -1,8 +1,8 @@
 ####################### Makefile Template ##########################
 # Compiler settings - Can be customized.
-CC = clang++
-CXXFLAGS = -std=c++17 -Wall -g -pthread
-LDFLAGS = 
+CC = g++ #-11
+CXXFLAGS = -std=c++17 -Wall -g #fcoroutines
+LDFLAGS = -pthread
 
 # Makefile settings - Can be customized.
 APPNAME = virtual_ref
