@@ -2,7 +2,7 @@
 //mv cons, CAO and MAO)
 #include <iostream>
 #include <cassert>
-
+#include <memory> //unique_ptr
 typedef struct thing{
 	//dynamically allocated member
 	int* arr;
@@ -19,52 +19,52 @@ typedef struct thing{
 	}
 	//copy const
 	thing(const thing& other){
-		arrSize = other.arrSize;
-		if (other.arrSize == 0) {
+		arrSize = other.arrSize; //get the other size
+		if (other.arrSize == 0) {//if it's empty, be empty
 			arr = nullptr;
 		}
 		else {
-			arr = new int[arrSize];
+			arr = new int[arrSize];//make your own array
 			for (int i = 0 ; i < arrSize; ++i){
-				arr[i] = other.arr[i];
+				arr[i] = other.arr[i];//copy everything over
 			}
 		}
 	}
 	//mv const
 	thing(thing&& other){
-		arrSize = other.arrSize;
-		arr = other.arr;
-		other.arr = nullptr;
+		arrSize = other.arrSize;//copy the size
+		arr = other.arr;//take their data
+		other.arr = nullptr;//set them to null
 	}
 	//CAO
 	thing& operator=(const thing& other){
-		if (arrSize != 0){
+		if (arrSize != 0){//if I have data, delete it
 			delete[] arr;
 		}
-		arrSize = other.arrSize;
-		if (arrSize == 0) arr = nullptr;
+		arrSize = other.arrSize;//copy their size
+		if (arrSize == 0) arr = nullptr;//if their size is 0, be empty
 		else{
 			arr = new int[arrSize];
 			for (int i = 0; i < arrSize; ++i){
-				arr[i] = other.arr[i];
+				arr[i] = other.arr[i];//copy their data
 			}
 		}
-		return *this;
+		return *this;//always return a reference to this
 	}
 	//MAO
 	thing& operator=(thing&& other){
-		if (arrSize != 0){
+		if (arrSize != 0){//if we have data, delete it
 			delete[] arr;
 		}
-		arrSize = other.arrSize;
-		arr = other.arr;
-		other.arrSize = 0;
+		arrSize = other.arrSize;//get their size
+		arr = other.arr;//take their data
+		other.arrSize = 0;//set them to empty
 		other.arr = nullptr;
-		return *this;
+		return *this;//always return this
 	}
 	//destructor
 	~thing(){
-		if (arr != nullptr){
+		if (arr != nullptr){//watch for the double free by checking
 			delete[] arr;
 		}
 	}
@@ -73,6 +73,8 @@ typedef struct thing{
 
 int main(){
 	thing t1;
+	//make a unique pointer from a raw one
+	std::unique_ptr<int[]> up(new int[5]);
 	assert(t1.arr == nullptr);
 	thing t2(5);
 	assert(t2.arr != nullptr);

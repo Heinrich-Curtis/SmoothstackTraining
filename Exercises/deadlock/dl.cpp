@@ -16,10 +16,15 @@ void threadFunc(){
 int main(){
 	mut.lock();
 	std::thread t(threadFunc);
-	std::this_thread::yield;
+	std::this_thread::yield();
 	mut2.lock();
 	mut.unlock();
-	mut.unlock();
+	//mut.unlock();
+	//no copyting or assigning
+	//const std::mutex mut3 = std::move(mut);
+	//can't lock a const mutex
+	//const std::mutex mut3;
+	//mut3.lock();
 	t.join();
 	return 0;
 }

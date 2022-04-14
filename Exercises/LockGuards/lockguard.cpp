@@ -26,6 +26,15 @@ typedef struct Thing{
 		thing2.data -= 2;
 		//unique locks are unlocked on their destruction when they lose scope
 	}
+	//do transfer except with scope_lock
+	void scope_transfer(Thing& thing1, Thing& thing2){
+		std::scoped_lock<std::mutex,std::mutex> guard(thing1.mut,thing2.mut);
+		//both locks are now locked, so we swap
+		auto val = thing1.data;
+		thing1.data = thing2.data;
+		thing2.data = val;
+		//both locks are unlocked as the objects go out of scope
+	}
 }Thing;
 
 int main(){
@@ -43,9 +52,11 @@ int main(){
 	//make some things to work on
 	 Thing thing1, thing2;
 	//start some threads 
-	std::thread t1(Thing::transfer, &thing1, std::ref(thing1), std::ref(thing2));
-	std::thread t2(Thing::transfer, &thing2, std::ref(thing1), std::ref(thing2));
+	std::thread t1(&Thing::transfer, &thing1, std::ref(thing1), std::ref(thing2));
+	std::thread t2(&Thing::transfer, &thing2, std::ref(thing1), std::ref(thing2));
+	std::thread t3(&Thing::scope_transfer, &thing1, std::ref(thing1), std::ref(thing2));
 	t1.join();
 	t2.join();
+	t3.join();
 	return 0;
 }

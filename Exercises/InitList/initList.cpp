@@ -16,7 +16,32 @@ class Class{
 	Class(int e, int f, int g, int h): a(e), b(f), c(g), d(h){
 		//body now empty, initializer list did it
 	}
+	virtual void print(){
+		std::cout << "Base print" << std::endl;
+	}
+	virtual ~Class(){}//doesn't actually do anything
 };
+
+//let's mess with some virtual stuff
+class Derived : public Class{
+	public:
+	float e, f;
+
+	Derived():e(0.0),f(0.0){}
+	Derived(float ne, float nf):e(ne),f(nf){};
+	virtual void print(){
+		std::cout<< "Derived Print" << std::endl;
+	}
+};
+
+class Bottom : public Derived{
+//using Class::print; adding this using makes the virtual chain end at base because there's no where lower to go
+	public:
+	virtual void print(){
+		std::cout <<"Bottom print"<< std::endl;
+	}
+};
+
 
 int main(){
 	Class c1;
@@ -29,5 +54,17 @@ int main(){
 	assert(c2.b == 2);
 	assert(c2.c == 3);
 	assert(c2.d == 4);
+	//mess around with the inheritance
+	Class base;
+	Class* bp = &base;
+	bp->print(); //should call base print
+	Derived der;
+	bp = &der;
+	bp->print(); //should call derived print?
+	Bottom bot;
+	bp = &bot;
+	bp->print(); //should call bot print?
+	Derived* dp = &bot; //bot print?
+	dp->print();
 	return 0;
 }
