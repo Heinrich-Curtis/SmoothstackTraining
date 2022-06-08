@@ -1,12 +1,13 @@
 #simple makefile for this
 CC=g++
 CFLAGS= -std=c++17 -g -Wall -Werror -pthread
-DEPS= Iters.cpp
+DEPS= poly.cpp
+TARGET = exercise
 
 exercise: $(DEPS)
-	$(CC) -o exercise $(CFLAGS) $(DEPS)
+	$(CC) -o $(TARGET) $(CFLAGS) $(DEPS)
 .PHONY: clean
 
 clean:
-	rm -f *.o exercise
+	rm -f *.o $(TARGET)
 	

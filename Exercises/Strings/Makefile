@@ -1,9 +1,9 @@
 #simple makefile for this
 CC=g++
 CFLAGS= -std=c++17 -g -Wall -Werror -pthread
-DEPS= pc.cpp
+DEPS=Strings.cpp
 
-exercise:
+exercise: $(DEPS)
 	$(CC) -o exercise $(CFLAGS) $(DEPS)
 .PHONY: clean
 

@@ -36,8 +36,19 @@ class Derived : public Class{
 
 class Bottom : public Derived{
 //using Class::print; adding this using makes the virtual chain end at base because there's no where lower to go
+	//add a member no one else has
+	int* arr;
 	public:
-	virtual void print(){
+	Bottom(){
+		arr = new int[5];
+	}
+	//what happens if no one calls this by using the base thing?
+	~Bottom(){
+		if (arr != nullptr){
+		delete[] arr;
+		}
+	}
+	void print(){
 		std::cout <<"Bottom print"<< std::endl;
 	}
 };
@@ -66,5 +77,8 @@ int main(){
 	bp->print(); //should call bot print?
 	Derived* dp = &bot; //bot print?
 	dp->print();
+	Class* b = new Bottom();
+	delete b;// here is where the resource leak happens
+	// do we get all the memory back, or leak?
 	return 0;
 }
